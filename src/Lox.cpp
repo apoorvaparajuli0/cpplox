@@ -53,6 +53,6 @@ void Lox::error(int line, std::string message) {
 }
 
 void Lox::report(int line, std::string where, std::string message) {
-    fprintf(stderr, "[line \" %d \"] Error %s : %s", line, where, message);
+    fprintf(stderr, "[line \" %d \"] Error %s : %s", line, where.c_str(), message.c_str());
     Lox::hadError = true;
 }
