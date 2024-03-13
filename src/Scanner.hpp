@@ -13,8 +13,6 @@ class Scanner {
         int line = 1;
         static std::map<std::string, TokenType> keywords;
 
-        
-
         bool isAtEnd();
         void scanToken();
         char advance();
