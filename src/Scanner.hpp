@@ -1,6 +1,7 @@
 #include "string"
 #include "list"
 #include "map"
+#include "TokenType.hpp"
 #include "Token.hpp"
 
 class Scanner {

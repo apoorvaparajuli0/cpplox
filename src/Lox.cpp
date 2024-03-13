@@ -3,7 +3,6 @@
 #include "vector"
 #include "list"
 #include "Scanner.hpp"
-#include "Token.hpp"
 #include "Lox.hpp"
 
 
@@ -13,9 +12,9 @@ void Lox::runFile(std::string path) {
     std::ifstream fileBuffer(path, std::ios::in | std::ios::binary);
     std::vector<char> bytes;
     if(fileBuffer.good()) {
-        char curr = NULL;
+        char curr = '\0';
         while(fileBuffer >> curr) {
-            if(curr != NULL) {
+            if(curr != '\0') {
                 bytes.push_back(curr);
             }
         }

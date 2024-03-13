@@ -1,6 +1,6 @@
 #include "string"
 #include "variant"
-#include "TokenType.hpp"
+#include "sstream"
 
 using Object = std::variant<std::nullptr_t, std::string, double, bool>;
 

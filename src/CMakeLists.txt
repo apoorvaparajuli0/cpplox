@@ -1,18 +1,5 @@
-cmake_minimum_required(VERSION 3.28.0)
-project(cpplox VERSION 0.1.0 LANGUAGES C CXX)
-
-include(CTest)
-enable_testing()
-
-add_executable(
-    cpplox 
-    main.cpp
-    Lox.cpp Lox.hpp
-)
-
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-set(CPACK_PROJECT_NAME ${PROJECT_NAME})
-set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
-include(CPack)
+add_library(src
+            Lox.cpp Lox.hpp
+            Scanner.cpp Scanner.hpp
+            Token.cpp Token.hpp
+            TokenType.hpp)
