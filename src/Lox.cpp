@@ -1,7 +1,6 @@
 #include "iostream"
 #include "fstream"
 #include "vector"
-#include "list"
 #include "Scanner.hpp"
 #include "Lox.hpp"
 
@@ -22,19 +21,19 @@ void Lox::runFile(std::string path) {
 
     run(std::string(bytes.begin(), bytes.end()));
 
-    if(Lox::hadError) exit(65); 
+    if(hadError) exit(65); 
 }
 
 void Lox::runPrompt() {
     for(;;) {
         printf("%s ", ">");
-        std::string line;
-        getline(std::cin, line);
-        if(line.empty()) {
+        std::string currLine;
+        getline(std::cin, currLine);
+        if(std::cin.eof()) {
             break;
         }
-        Lox::run(line);
-        Lox::hadError = false;
+        run(currLine);
+        hadError = false;
     }
 }
 
@@ -52,6 +51,7 @@ void Lox::error(int line, std::string message) {
 }
 
 void Lox::report(int line, std::string where, std::string message) {
-    fprintf(stderr, "[line \" %d \"] Error %s : %s", line, where.c_str(), message.c_str());
-    Lox::hadError = true;
+    fprintf(stderr, "[line \" %d \"] Error %s : %s\n", line, where.c_str(), message.c_str());
+    fprintf(stdout, "\n");
+    hadError = true;
 }

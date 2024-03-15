@@ -6,5 +6,5 @@ Token::Token(TokenType type, std::string &lexeme, Object &literal, int line) :
 {}
 
 std::string Token::toString() {
-    return typeNames[Token::type] + " " + Token::lexeme + std::visit(Resolver{}, Token::literal);
+    return typeNames[type] + " " + lexeme + " " + std::visit(Resolver{}, literal) + "\n";
 }

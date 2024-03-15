@@ -1,6 +1,5 @@
-#include "string"
 #include "list"
-#include "map"
+#include "unordered_map"
 #include "TokenType.hpp"
 #include "Token.hpp"
 
@@ -11,13 +10,13 @@ class Scanner {
         int start = 0;
         int current = 0;
         int line = 1;
-        static std::map<std::string, TokenType> keywords;
+        static std::unordered_map<std::string, TokenType> keywords;
 
         bool isAtEnd();
         void scanToken();
         char advance();
         void addToken(TokenType token);
-        void addToken(TokenType token, Object literal);
+        void addToken(TokenType token, Object& literal);
         bool match(char expected);
         char peek();
         void string();
