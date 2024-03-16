@@ -10,6 +10,10 @@ class Scanner {
         int start = 0;
         int current = 0;
         int line = 1;
+        
+        //CHALLENGE #01: Add Support for Multi-Line Nested Comments
+        // int commentLayer = 0;
+
         static std::unordered_map<std::string, TokenType> keywords;
 
         bool isAtEnd();

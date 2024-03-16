@@ -67,7 +67,26 @@ void Scanner::scanToken() {
         case '/':
             if(match('/')) {
                 while(peek() != '\n' && !isAtEnd()) advance();
-            } else {
+            } 
+            //CHALLENGE #01: Add Support for Multi-Line Nested Comments
+            // else if(match('*')) {
+            //     commentLayer++;
+            //     while(!isAtEnd() && commentLayer > 0) {
+            //         if(peek() == '\n') {
+            //             line++;
+            //         }
+            //         if(peek() == '/' && peekNext() == '*') {
+            //             commentLayer++;
+            //         }
+            //         if(peek() == '*' && peekNext() == '/') {
+            //             commentLayer--;
+            //         }
+
+            //         advance();
+            //     }
+            //     if(peek() == '*' && peekNext() == '/') advance(); advance();
+            // } 
+            else {
                 addToken(SLASH);
             }
             break;

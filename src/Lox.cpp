@@ -4,7 +4,6 @@
 #include "Scanner.hpp"
 #include "Lox.hpp"
 
-
 bool Lox::hadError = false;
 
 void Lox::runFile(std::string path) {
