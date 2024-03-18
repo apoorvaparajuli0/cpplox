@@ -1,6 +1,5 @@
 #include "list"
 #include "unordered_map"
-#include "TokenType.hpp"
 #include "Token.hpp"
 
 class Scanner {

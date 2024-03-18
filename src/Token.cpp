@@ -1,4 +1,3 @@
-#include "TokenType.hpp"
 #include "Token.hpp"
 
 Token::Token(TokenType type, std::string &lexeme, Object &literal, int line) : 

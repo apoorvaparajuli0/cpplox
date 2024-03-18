@@ -1,6 +1,7 @@
 #include "string"
 #include "variant"
 #include "sstream"
+#include "TokenType.hpp"
 
 using Object = std::variant<std::nullptr_t, std::string, double, bool>;
 
@@ -11,6 +12,7 @@ class Token {
     int line;
 
     public:
+        Token();
         Token(TokenType type, std::string &lexeme, Object &literal, int line);
         std::string toString();
 

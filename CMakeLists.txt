@@ -5,6 +5,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 project(cpplox)
 
 add_executable(${PROJECT_NAME} "src/main.cpp")
+add_executable(generate_ast "utilities/GenerateAst.cpp" "utilities/GenerateAst.hpp")
 
 add_subdirectory(src)
 
