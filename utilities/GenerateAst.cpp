@@ -38,21 +38,41 @@ void defineHeader(std::string outputDir, std::string baseName, std::list<std::st
     std::ofstream out;
     out.open(path, std::ios::out);
     out << "#include \"list\"\n";
+    out << "#include \"any\"\n";
     out << "#include \"Token.hpp\"\n\n";
 
     out << "class " + baseName + " {\n";
+    out << "  public:\n";
 
     for(std::string type : types) {
         std::string className = trim(split(type, ":").front());
-        out << "  class " + className + ";\n";
+        out << "    class " + className + ";\n";
     }
+
+    defineVisitor(out,  baseName, types);
+
+    out << "\n";
+    out << "    virtual std::any accept(Expr::Visitor visitor);\n";
 
     out << "};\n";
     out.close();
 }
 
+void defineVisitor(std::ofstream& out, std::string baseName, std::list<std::string> types) {
+    out << "\n";
+    out << "    class Visitor {\n";
+    out << "      public:\n";
+
+    for(std::string type : types) {
+        std::string typeName = trim(split(type, ":").front());
+        out << "        virtual std::any visit" + typeName + baseName + "(Expr::" + typeName + " " + toLowerCase(baseName) + ");\n";
+    }
+
+    out << "    };\n";
+}
+
 void defineType(std::ofstream& out, std::string baseName, std::string className, std::string fieldList) {
-    out << " class " + baseName + "::" + className + " : " + baseName + " {\n";
+    out << "class " + baseName + "::" + className + " : " + baseName + " {\n";
 
     out << "    " + className + "(" + fieldList + ") {\n";
 
@@ -65,11 +85,29 @@ void defineType(std::ofstream& out, std::string baseName, std::string className,
 
     out << "    };\n\n";
 
+    out << "    std::any accept(Visitor visitor) override {\n";
+    out << "      return visitor.visit" + className + baseName + "(*this);\n";
+    out << "    }\n";
+
     for(std::string field : fields) {
         out << "    " + field + ";\n";
     }
 
-    out << "  };\n";
+    out << "};\n";
+}
+
+std::string toLowerCase(std::string toLower) {
+    std::string ret;
+
+    for(char c : toLower) {
+        if(c >= 'A' && c <= 'Z') {
+            ret.push_back(c + 32);
+        } else {
+            ret.push_back(c);
+        }
+    }
+
+    return ret;
 }
 
 //trims preceding and subsequent whitespace from a string

@@ -6,6 +6,7 @@ project(cpplox)
 
 add_executable(${PROJECT_NAME} "src/main.cpp")
 add_executable(generate_ast "utilities/GenerateAst.cpp" "utilities/GenerateAst.hpp")
+add_executable(ast_printer "src/AstPrinter.cpp")
 
 add_subdirectory(src)
 
