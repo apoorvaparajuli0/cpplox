@@ -1,5 +1,9 @@
 #include "GenerateAst.hpp"
 
+//take a look at this implementation for clues on how to reapproach
+//the circular dependancy issue
+//https://github.com/vilbedawg/jlox-cpp/blob/master/include/Visitor.hpp
+
 int main(int argc, char** argv) {
     if(argc != 2) {
         fprintf(stderr, "%s\n", "Usage: generate_ast <output directory>");
@@ -49,26 +53,27 @@ void defineHeader(std::string outputDir, std::string baseName, std::list<std::st
         out << "    class " + className + ";\n";
     }
 
-    defineVisitor(out,  baseName, types);
-
     out << "\n";
-    out << "    virtual std::any accept(Expr::Visitor visitor);\n";
+    out << "    virtual std::any accept(Visitor visitor);\n";
 
     out << "};\n";
+
+    defineVisitor(out,  baseName, types);
+
     out.close();
 }
 
 void defineVisitor(std::ofstream& out, std::string baseName, std::list<std::string> types) {
     out << "\n";
-    out << "    class Visitor {\n";
-    out << "      public:\n";
+    out << "class Visitor {\n";
+    out << "  public:\n";
 
     for(std::string type : types) {
         std::string typeName = trim(split(type, ":").front());
-        out << "        virtual std::any visit" + typeName + baseName + "(Expr::" + typeName + " " + toLowerCase(baseName) + ");\n";
+        out << "    virtual std::any visit" + typeName + baseName + "(Expr::" + typeName + " " + toLowerCase(baseName) + ");\n";
     }
 
-    out << "    };\n";
+    out << "};\n";
 }
 
 void defineType(std::ofstream& out, std::string baseName, std::string className, std::string fieldList) {
