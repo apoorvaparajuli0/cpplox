@@ -4,5 +4,6 @@ add_library(src
             Token.cpp      "../headers/Token.hpp"
             Expr.cpp       "../headers/Expr.hpp"
             AstPrinter.cpp "../headers/AstPrinter.hpp"
+            RPNPrinter.cpp "../headers/RPNPrinter.hpp"
             "../headers/TokenType.hpp" "../headers/Visitor.hpp"
             )

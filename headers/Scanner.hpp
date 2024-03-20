@@ -1,3 +1,6 @@
+#ifndef SCANNER_HPP
+#define SCANNER_HPP
+
 #include "list"
 #include "unordered_map"
 #include "Token.hpp"
@@ -35,3 +38,5 @@ class Scanner {
     
     std::list<Token> scanTokens();
 };
+
+#endif

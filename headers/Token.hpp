@@ -1,3 +1,6 @@
+#ifndef TOKEN_HPP
+#define TOKEN_HPP
+
 #include "string"
 #include "variant"
 #include "sstream"
@@ -64,3 +67,5 @@ class Token {
         std::string operator()(std::string var_literal) const { return VariantResolver(var_literal); }
     };
 };
+
+#endif

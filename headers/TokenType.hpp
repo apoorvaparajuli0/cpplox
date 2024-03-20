@@ -1,3 +1,6 @@
+#ifndef TOKENTYPE_HPP
+#define TOKENTYPE_HPP
+
 #include "string"
 
 enum TokenType {
@@ -41,3 +44,5 @@ static const std::string typeNames[] = {
 
 static_assert(sizeof(typeNames) / sizeof(typeNames[0]) == NUM_TOKEN_TYPES, 
               "enum list of TokenTypes' size doesn't match that of it's respective string array");
+
+#endif

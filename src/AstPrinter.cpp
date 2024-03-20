@@ -1,4 +1,3 @@
-#include "initializer_list"
 #include "../headers/AstPrinter.hpp"
 
 std::string AstPrinter::print(std::initializer_list<expr_ptr>& exprs) {

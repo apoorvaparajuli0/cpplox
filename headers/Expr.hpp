@@ -1,3 +1,6 @@
+#ifndef EXPR_HPP
+#define EXPR_HPP
+
 #include "../headers/Visitor.hpp"
 
 class Binary : public Expr {
@@ -31,3 +34,5 @@ class Unary : public Expr {
   Unary(Token operator_, expr_ptr right);
   std::any accept(Visitor<std::any>& visitor) const override;
 };
+
+#endif

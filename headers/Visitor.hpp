@@ -1,3 +1,6 @@
+#ifndef VISITOR_HPP
+#define VISITOR_HPP
+
 #include "any"
 #include "memory"
 #include "../headers/Token.hpp"
@@ -24,3 +27,5 @@ class Expr {
 };
 
 using expr_ptr = std::unique_ptr<Expr>;
+
+#endif

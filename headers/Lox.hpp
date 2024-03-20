@@ -1,3 +1,6 @@
+#ifndef LOX_HPP
+#define LOX_HPP
+
 #include "string"
 
 class Lox {
@@ -12,3 +15,5 @@ class Lox {
         static void run(std::string src);
         static void report(int line, std::string where, std::string message);
 };
+
+#endif
