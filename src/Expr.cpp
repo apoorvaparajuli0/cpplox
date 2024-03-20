@@ -1,48 +1,26 @@
 #include "Expr.hpp"
 
-class Expr::Binary : Expr {
-    Binary(Expr left, Token operator_, Expr right) {
-      this->left = left;
-      this->operator_ = operator_;
-      this->right = right;
-    };
-
-    std::any accept(Visitor visitor) override {
+    Binary::Binary(expr_ptr left, Token operator_, expr_ptr right) : 
+    left{std::move(left)}, operator_{std::move(operator_)}, right{std::move(right)} {}
+    std::any Binary::accept(Visitor<std::any>& visitor) const {
       return visitor.visitBinaryExpr(*this);
     }
-    Expr left;
-    Token operator_;
-    Expr right;
-};
-class Expr::Grouping : Expr {
-    Grouping(Expr expression) {
-      this->expression = expression;
-    };
 
-    std::any accept(Visitor visitor) override {
+    Grouping::Grouping(expr_ptr expression) : 
+    expression{std::move(expression)} {}
+    std::any Grouping::accept(Visitor<std::any>& visitor) const {
       return visitor.visitGroupingExpr(*this);
     }
-    Expr expression;
-};
-class Expr::Literal : Expr {
-    Literal(Object value) {
-      this->value = value;
-    };
 
-    std::any accept(Visitor visitor) override {
+    Literal::Literal(Object value) : 
+    value{std::move(value)} {}
+    std::any Literal::accept(Visitor<std::any>& visitor) const {
       return visitor.visitLiteralExpr(*this);
     }
-    Object value;
-};
-class Expr::Unary : Expr {
-    Unary(Token operator_, Expr right) {
-      this->operator_ = operator_;
-      this->right = right;
-    };
 
-    std::any accept(Visitor visitor) override {
+    Unary::Unary(Token operator_, expr_ptr right) : 
+    operator_{std::move(operator_)}, right{std::move(right)} {}
+    std::any Unary::accept(Visitor<std::any>& visitor) const {
       return visitor.visitUnaryExpr(*this);
     }
-    Token operator_;
-    Expr right;
-};
+

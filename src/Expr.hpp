@@ -1,22 +1,33 @@
-#include "list"
-#include "any"
-#include "Token.hpp"
+#include "Visitor.hpp"
 
-
-class Expr {
+class Binary : public Expr {
   public:
-    class Binary;
-    class Grouping;
-    class Literal;
-    class Unary;
+    expr_ptr left;
+    Token operator_;
+    expr_ptr right;
 
-    virtual std::any accept(Visitor visitor);
+  Binary(expr_ptr left, Token operator_, expr_ptr right);
+  std::any accept(Visitor<std::any>& visitor) const override;
 };
-
-class Visitor {
+class Grouping : public Expr {
   public:
-    virtual std::any visitBinaryExpr(Expr::Binary expr);
-    virtual std::any visitGroupingExpr(Expr::Grouping expr);
-    virtual std::any visitLiteralExpr(Expr::Literal expr);
-    virtual std::any visitUnaryExpr(Expr::Unary expr);
+    expr_ptr expression;
+
+  Grouping(expr_ptr expression);
+  std::any accept(Visitor<std::any>& visitor) const override;
+};
+class Literal : public Expr {
+  public:
+    Object value;
+
+  Literal(Object value);
+  std::any accept(Visitor<std::any>& visitor) const override;
+};
+class Unary : public Expr {
+  public:
+    Token operator_;
+    expr_ptr right;
+
+  Unary(Token operator_, expr_ptr right);
+  std::any accept(Visitor<std::any>& visitor) const override;
 };

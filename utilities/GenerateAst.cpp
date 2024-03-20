@@ -11,10 +11,10 @@ int main(int argc, char** argv) {
     }
 
     std::list<std::string> types = {
-      "Binary   : Expr left, Token operator_, Expr right",
-      "Grouping : Expr expression",
+      "Binary   : expr_ptr left, Token operator_, expr_ptr right",
+      "Grouping : expr_ptr expression",
       "Literal  : Object value",
-      "Unary    : Token operator_, Expr right"
+      "Unary    : Token operator_, expr_ptr right"
     };
 
     std::string outputDir = argv[1];
@@ -38,67 +38,96 @@ void defineAst(std::string outputDir, std::string baseName, std::list<std::strin
 }
 
 void defineHeader(std::string outputDir, std::string baseName, std::list<std::string> types) {
-    std::string path = outputDir + "/" + baseName + ".hpp";
+    std::string path = outputDir + "/" + "Visitor" + ".hpp";
     std::ofstream out;
     out.open(path, std::ios::out);
-    out << "#include \"list\"\n";
     out << "#include \"any\"\n";
+    out << "#include \"memory\"\n";
     out << "#include \"Token.hpp\"\n\n";
-
-    out << "class " + baseName + " {\n";
-    out << "  public:\n";
 
     for(std::string type : types) {
         std::string className = trim(split(type, ":").front());
-        out << "    class " + className + ";\n";
+        out << "class " + className + ";\n";
     }
 
-    out << "\n";
-    out << "    virtual std::any accept(Visitor visitor);\n";
-
-    out << "};\n";
-
     defineVisitor(out,  baseName, types);
+
+    out << "\n";
+    out << "class " + baseName + " {\n";
+
+    out << "  public:\n";
+    out << "    virtual std::any accept(Visitor<std::any>& visitor) const = 0;\n";
+    out << "    virtual ~Expr() = default;\n";
+
+    out << "};\n\n";
+
+    out << "using expr_ptr = std::unique_ptr<Expr>;\n";
+
+    out.close();
+
+    path = outputDir + "/" + baseName + ".hpp";
+    out.open(path, std::ios::out);
+
+    out << "#include \"Visitor.hpp\"\n\n";
+
+    for(std::string type : types) {
+        std::string exprType = trim(split(type, ":").front());
+        out << "class " + exprType + " : public " + baseName + " {\n";
+
+        std::string fieldList = trim(split(type, ":").back());
+        std::list<std::string> fields = split(fieldList, ", ");
+
+        out << "  public:\n";
+        for(std::string field : fields) {
+            out << "    " + field + ";\n";
+        }
+
+        out << "\n";
+        out << "  " + exprType + "(" + fieldList + ");\n";
+        out << "  std::any accept(Visitor<std::any>& visitor) const override;\n";
+
+        out << "};\n";
+    }
 
     out.close();
 }
 
 void defineVisitor(std::ofstream& out, std::string baseName, std::list<std::string> types) {
     out << "\n";
+    out << "template<class R>\n";
     out << "class Visitor {\n";
     out << "  public:\n";
 
     for(std::string type : types) {
         std::string typeName = trim(split(type, ":").front());
-        out << "    virtual std::any visit" + typeName + baseName + "(Expr::" + typeName + " " + toLowerCase(baseName) + ");\n";
+        out << "    virtual R visit" + typeName + baseName + "(const " + typeName + "& " + toLowerCase(baseName) + ") = 0;\n";
     }
+    out << "    virtual ~Visitor() = default;\n";
 
     out << "};\n";
 }
 
 void defineType(std::ofstream& out, std::string baseName, std::string className, std::string fieldList) {
-    out << "class " + baseName + "::" + className + " : " + baseName + " {\n";
 
-    out << "    " + className + "(" + fieldList + ") {\n";
+    out << "    " + className + "::" + className + "(" + fieldList + ") : \n";
 
     std::list<std::string> fields = split(fieldList, ", ");
-
+    out << "    ";
     for(std::string field : fields) {
         std::string name = split(field, " ").back();
-        out << "      this->" + name + " = " + name + ";\n";
+        if(field != fields.back()) {
+            out << name + "{std::move(" + name + ")}, ";
+        } else {
+            out << name + "{std::move(" + name + ")} ";
+        }
     }
+    
+    out << "{}";
+    out << "\n";
 
-    out << "    };\n\n";
-
-    out << "    std::any accept(Visitor visitor) override {\n";
+    out << "    std::any " + className + "::accept(Visitor<std::any>& visitor) const {\n";
     out << "      return visitor.visit" + className + baseName + "(*this);\n";
-    out << "    }\n";
-
-    for(std::string field : fields) {
-        out << "    " + field + ";\n";
-    }
-
-    out << "};\n";
+    out << "    }\n\n";
 }
 
 std::string toLowerCase(std::string toLower) {

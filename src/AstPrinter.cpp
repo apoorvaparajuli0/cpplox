@@ -1,17 +1,43 @@
-#include "string"
-#include "Expr.hpp"
-#include "Visitor.hpp"
+#include "initializer_list"
+#include "AstPrinter.hpp"
 
-class AstPrinter : Visitor {
-    std::string print(Expr expr) {
-        return std::any_cast<std::string>(expr.accept(*this));
+std::string AstPrinter::print(std::initializer_list<expr_ptr>& exprs) {
+    for(const auto& expr : exprs) {
+        expr.get()->accept(*this);
     }
 
-    std::string parenthesize(std::string lexeme, Expr left, Expr right) {
+    return oss.str();
+}
 
-    }
+std::string AstPrinter::parenthesize(std::string name, std::initializer_list<const Expr*> exprs) {
 
-    std::any visitBinaryExpr(Expr::Binary expr) override {
-        return parenthesize(expr.operator_.lexeme, expr.left, expr.right);
+    oss << "(";
+    oss << name;
+
+    for(const auto& expr : exprs) {
+        oss << " ";
+        oss << std::any_cast<std::string>(expr->accept(*this));
     }
-};
+    oss << ")";
+
+    return {};
+}
+
+std::any AstPrinter::visitBinaryExpr(const Binary& expr) {
+    return parenthesize(expr.operator_.lexeme, {std::move(expr.left.get()), std::move(expr.right.get())});
+}
+
+std::any AstPrinter::visitGroupingExpr(const Grouping& expr) {
+    return parenthesize("group", {std::move(expr.expression.get())});
+}
+
+std::any AstPrinter::visitLiteralExpr(const Literal& expr) {
+    if(std::visit(Token::Resolver{}, expr.value) == "null") return "nil";
+    oss << std::visit(Token::Resolver{}, expr.value);
+
+    return std::string{""};
+}
+
+std::any AstPrinter::visitUnaryExpr(const Unary& expr) {
+    return parenthesize(expr.operator_.lexeme, {std::move(expr.right.get())});
+}
