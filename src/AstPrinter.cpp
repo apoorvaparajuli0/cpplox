@@ -1,5 +1,5 @@
 #include "initializer_list"
-#include "AstPrinter.hpp"
+#include "../headers/AstPrinter.hpp"
 
 std::string AstPrinter::print(std::initializer_list<expr_ptr>& exprs) {
     for(const auto& expr : exprs) {

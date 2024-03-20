@@ -1,8 +1,8 @@
 #include "iostream"
 #include "fstream"
 #include "vector"
-#include "Scanner.hpp"
-#include "Lox.hpp"
+#include "../headers/Scanner.hpp"
+#include "../headers/Lox.hpp"
 
 bool Lox::hadError = false;
 

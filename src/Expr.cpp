@@ -1,4 +1,4 @@
-#include "Expr.hpp"
+#include "../headers/Expr.hpp"
 
     Binary::Binary(expr_ptr left, Token operator_, expr_ptr right) : 
     left{std::move(left)}, operator_{std::move(operator_)}, right{std::move(right)} {}

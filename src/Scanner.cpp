@@ -1,5 +1,5 @@
-#include "Scanner.hpp"
-#include "Lox.hpp"
+#include "../headers/Scanner.hpp"
+#include "../headers/Lox.hpp"
 
 std::unordered_map<std::string, TokenType> Scanner::keywords = {
     {"and",    AND}, 

@@ -1,6 +1,6 @@
 #include "any"
 #include "memory"
-#include "Token.hpp"
+#include "../headers/Token.hpp"
 
 class Binary;
 class Grouping;

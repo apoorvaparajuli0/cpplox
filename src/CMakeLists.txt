@@ -1,8 +1,8 @@
 add_library(src
-            Lox.cpp Lox.hpp
-            Scanner.cpp Scanner.hpp
-            Token.cpp Token.hpp
-            Expr.cpp Expr.hpp
-            AstPrinter.cpp AstPrinter.hpp
-            Visitor.hpp
-            TokenType.hpp)
+            Lox.cpp        "../headers/Lox.hpp"
+            Scanner.cpp    "../headers/Scanner.hpp"
+            Token.cpp      "../headers/Token.hpp"
+            Expr.cpp       "../headers/Expr.hpp"
+            AstPrinter.cpp "../headers/AstPrinter.hpp"
+            "../headers/TokenType.hpp" "../headers/Visitor.hpp"
+            )

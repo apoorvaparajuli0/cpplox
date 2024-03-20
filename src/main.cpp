@@ -1,5 +1,5 @@
-#include "Lox.hpp"
-#include "AstPrinter.hpp"
+#include "../headers/Lox.hpp"
+#include "../headers/AstPrinter.hpp"
 
 int main(int argc, char** argv){
     if(argc > 2) {

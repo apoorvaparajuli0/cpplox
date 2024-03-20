@@ -1,9 +1,5 @@
 #include "GenerateAst.hpp"
 
-//take a look at this implementation for clues on how to reapproach
-//the circular dependancy issue
-//https://github.com/vilbedawg/jlox-cpp/blob/master/include/Visitor.hpp
-
 int main(int argc, char** argv) {
     if(argc != 2) {
         fprintf(stderr, "%s\n", "Usage: generate_ast <output directory>");
@@ -23,10 +19,10 @@ int main(int argc, char** argv) {
 }
 
 void defineAst(std::string outputDir, std::string baseName, std::list<std::string> types) {
-    std::string path = outputDir + "/" + baseName + ".cpp";
+    std::string path = outputDir + "/src/" + baseName + ".cpp";
     std::ofstream out;
     out.open(path, std::ios::out);
-    out << "#include \"Expr.hpp\"\n\n";
+    out << "#include \"../headers/Expr.hpp\"\n\n";
 
     for(std::string type : types) {
         std::string className = trim(split(type, ":").front());
@@ -38,12 +34,12 @@ void defineAst(std::string outputDir, std::string baseName, std::list<std::strin
 }
 
 void defineHeader(std::string outputDir, std::string baseName, std::list<std::string> types) {
-    std::string path = outputDir + "/" + "Visitor" + ".hpp";
+    std::string path = outputDir + "/headers/" + "Visitor" + ".hpp";
     std::ofstream out;
     out.open(path, std::ios::out);
     out << "#include \"any\"\n";
     out << "#include \"memory\"\n";
-    out << "#include \"Token.hpp\"\n\n";
+    out << "#include \"../headers/Token.hpp\"\n\n";
 
     for(std::string type : types) {
         std::string className = trim(split(type, ":").front());
@@ -65,10 +61,10 @@ void defineHeader(std::string outputDir, std::string baseName, std::list<std::st
 
     out.close();
 
-    path = outputDir + "/" + baseName + ".hpp";
+    path = outputDir + "/headers/" + baseName + ".hpp";
     out.open(path, std::ios::out);
 
-    out << "#include \"Visitor.hpp\"\n\n";
+    out << "#include \"../headers/Visitor.hpp\"\n\n";
 
     for(std::string type : types) {
         std::string exprType = trim(split(type, ":").front());
