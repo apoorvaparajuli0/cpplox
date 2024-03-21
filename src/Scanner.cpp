@@ -52,6 +52,8 @@ void Scanner::scanToken() {
         case '+': addToken(PLUS);        break;
         case ';': addToken(SEMICOLON);   break;
         case '*': addToken(STAR);        break; 
+        case '?': addToken(QUESTION);    break;
+        case ':': addToken(COLON);       break;
         case '!':
             addToken(match('=') ? BANG_EQUAL    : BANG);
             break;
@@ -68,7 +70,7 @@ void Scanner::scanToken() {
             if(match('/')) {
                 while(peek() != '\n' && !isAtEnd()) advance();
             } 
-            //CHALLENGE #01: Add Support for Multi-Line Nested Comments
+            //CHALLENGE 4.4: Add Support for Multi-Line Nested Comments
             // else if(match('*')) {
             //     commentLayer++;
             //     while(!isAtEnd() && commentLayer > 0) {

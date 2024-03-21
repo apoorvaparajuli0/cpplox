@@ -23,7 +23,9 @@ class Parser {
         expr_ptr parse();
     
     private:
-
+        expr_ptr ternary();
+        expr_ptr branch();
+        expr_ptr comma();
         expr_ptr expression();
         expr_ptr equality();
         bool match(std::initializer_list<TokenType> types);

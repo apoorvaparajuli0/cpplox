@@ -23,6 +23,8 @@ enum TokenType {
 
   EOF_,
 
+  COLON, QUESTION,
+
   NUM_TOKEN_TYPES
 };
 
@@ -39,7 +41,10 @@ static const std::string typeNames[] = {
   "for",         "if",            "nil",
   "or",          "print",         "return",
   "super",       "this",          "true",
-  "var",         "while",         "eof_"
+  "var",         "while",         "eof_",
+
+  
+  "colon",       "question"
 };
 
 static_assert(sizeof(typeNames) / sizeof(typeNames[0]) == NUM_TOKEN_TYPES, 

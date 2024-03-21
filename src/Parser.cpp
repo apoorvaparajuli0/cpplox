@@ -10,14 +10,61 @@ expr_ptr Parser::parse() {
 }
 
 expr_ptr Parser::expression() {
-    return equality();
+    return ternary();
+    // return equality();
+}
+
+expr_ptr Parser::ternary() {
+
+    expr_ptr expr = equality();
+
+    while(match({QUESTION})) {
+        Token op = previous();
+        expr_ptr right = branch();
+
+        expr_ptr temp(new Binary(std::move(expr), op, std::move(right)));
+        expr = std::move(temp);
+    }
+
+    return expr;
+}
+
+expr_ptr Parser::branch() {
+    
+    expr_ptr expr = comma();
+
+    while(match({COLON})) {
+        Token op = previous();
+        expr_ptr right = comma();
+
+        expr_ptr temp(new Binary(std::move(expr), op, std::move(right)));
+        expr = std::move(temp);
+    }
+
+    return expr;
+}
+
+expr_ptr Parser::comma() {
+
+    expr_ptr expr = equality();
+
+    while(match({COMMA})) {
+        Token op = previous();
+        expr_ptr right = equality();
+
+        expr_ptr temp(new Binary(std::move(expr), op, std::move(right)));
+        expr = std::move(temp);
+    }
+
+    return expr;
 }
 
 /**
  * lots of redundancy among equality(), comparison(), etc., find some
- * way to generalize and create a helper method
+ * way to generalize and create a helper method among binary expression types
 */
 expr_ptr Parser::equality() {
+
     expr_ptr expr = comparison();
 
     while(match({BANG_EQUAL, EQUAL_EQUAL})) {
@@ -32,6 +79,7 @@ expr_ptr Parser::equality() {
 }
 
 expr_ptr Parser::comparison() {
+
     expr_ptr expr = term();
 
     while(match({GREATER, GREATER_EQUAL, LESS, LESS_EQUAL})) {
@@ -46,6 +94,7 @@ expr_ptr Parser::comparison() {
 }
 
 expr_ptr Parser::term() {
+
     expr_ptr expr = factor();
 
     while(match({MINUS, PLUS})) {
@@ -60,6 +109,7 @@ expr_ptr Parser::term() {
 }
 
 expr_ptr Parser::factor() {
+
     expr_ptr expr = unary();
 
     while(match({SLASH, STAR})) {
@@ -95,7 +145,7 @@ expr_ptr Parser::primary() {
 
     if(match({LEFT_PAREN})) {
         expr_ptr expr = expression();
-        consume(RIGHT_PAREN, "Expect ') after expression.");
+        consume(RIGHT_PAREN, "Expect ')' after expression.");
         
         return expr_ptr(new Grouping(std::move(expr)));
     }
