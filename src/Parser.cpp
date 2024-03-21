@@ -15,6 +15,13 @@ expr_ptr Parser::expression() {
 }
 
 expr_ptr Parser::ternary() {
+    if(match({QUESTION})) {
+        try {
+            expr_ptr right_err = branch();
+        } catch(ParseError& err) {
+            throw error(peek(), "An Expression Must Precede the '?' Operator");
+        }
+    }
 
     expr_ptr expr = equality();
 
@@ -30,8 +37,19 @@ expr_ptr Parser::ternary() {
 }
 
 expr_ptr Parser::branch() {
+    if(match({COLON})) {
+        try {
+            expr_ptr right_err = comma();
+        } catch(ParseError& err) {
+            throw error(peek(), "An Expression Must Precede the ':' Operator");
+        }
+    }
     
     expr_ptr expr = comma();
+
+    if(!check(COLON)) {
+        throw error(peek(), "Branch ':' Is Missing From Ternary");
+    }
 
     while(match({COLON})) {
         Token op = previous();
@@ -45,6 +63,13 @@ expr_ptr Parser::branch() {
 }
 
 expr_ptr Parser::comma() {
+    if(match({COMMA})) {
+        try {
+            expr_ptr right_err = equality();
+        } catch(ParseError& err) {
+            throw error(peek(), "An Expression Must Precede the ',' Operator");
+        }
+    }
 
     expr_ptr expr = equality();
 
@@ -64,6 +89,13 @@ expr_ptr Parser::comma() {
  * way to generalize and create a helper method among binary expression types
 */
 expr_ptr Parser::equality() {
+    if(match({BANG_EQUAL, EQUAL_EQUAL})) {
+        try {
+            expr_ptr right_err = comparison();
+        } catch(ParseError& err) {
+            throw error(peek(), "An Expression Must Precede an Equality Operator");
+        }
+    }
 
     expr_ptr expr = comparison();
 
@@ -79,6 +111,13 @@ expr_ptr Parser::equality() {
 }
 
 expr_ptr Parser::comparison() {
+    if(match({GREATER, GREATER_EQUAL, LESS, LESS_EQUAL})) {
+        try {
+            expr_ptr right_err = term();
+        } catch(ParseError& err) {
+            throw error(peek(), "An Expression Must Precede a Comparison Operator");
+        }
+    }
 
     expr_ptr expr = term();
 
@@ -93,6 +132,12 @@ expr_ptr Parser::comparison() {
     return expr;
 }
 
+/**
+ * Didn't put error productions here since MINUS without a
+ * preceding expression could be interpreted as a unary subtraction
+ *  and PLUS not not having one is handled by the higher precedence
+ *  error production 
+*/
 expr_ptr Parser::term() {
 
     expr_ptr expr = factor();
@@ -109,6 +154,13 @@ expr_ptr Parser::term() {
 }
 
 expr_ptr Parser::factor() {
+    if(match({SLASH, STAR})) {
+        try {
+            expr_ptr right_err = unary();
+        } catch(ParseError& err) {
+            throw error(peek(), "An Expression Must Precede the Multiplication/Division Operators");
+        }
+    }
 
     expr_ptr expr = unary();
 
@@ -124,6 +176,13 @@ expr_ptr Parser::factor() {
 }
 
 expr_ptr Parser::unary() {
+    if(match({PLUS})) {
+        try {
+            expr_ptr right_err = unary();
+        } catch(ParseError& err) {
+            throw error(peek(), "'+' Cannot be Applied to Unary Expression");
+        }
+    }
     if(match({BANG, MINUS})) {
         Token op = previous();
         expr_ptr right = unary();
