@@ -3,6 +3,8 @@
 #include "vector"
 #include "../headers/Scanner.hpp"
 #include "../headers/Lox.hpp"
+#include "../headers/Parser.hpp"
+#include "../headers/AstPrinter.hpp"
 
 bool Lox::hadError = false;
 
@@ -38,11 +40,17 @@ void Lox::runPrompt() {
 
 void Lox::run(std::string src) {
     Scanner scanner = Scanner(src);
-    std::list<Token> tokens = scanner.scanTokens();
+    std::vector<Token> tokens = scanner.scanTokens();
 
-    for(Token token : tokens) {
-        std::cout << token.toString();
-    }
+    Parser parser = Parser(tokens);
+    expr_ptr expression = parser.parse();
+
+    if(hadError) return;
+
+    AstPrinter printer;
+    std::initializer_list<expr_ptr> exprs = {std::move(expression)};
+    
+    printf("%s\n", printer.print(exprs).c_str());
 }
 
 void Lox::error(int line, std::string message) {
@@ -53,4 +61,12 @@ void Lox::report(int line, std::string where, std::string message) {
     fprintf(stderr, "[line \" %d \"] Error %s : %s\n", line, where.c_str(), message.c_str());
     fprintf(stdout, "\n");
     hadError = true;
+}
+
+void Lox::error(Token token, std::string message) {
+    if(token.type == EOF_) {
+        report(token.line, " at end", message);
+    } else {
+      report(token.line, " at '" + token.lexeme + "'", message);
+    }
 }

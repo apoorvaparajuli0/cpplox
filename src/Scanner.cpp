@@ -24,7 +24,7 @@ Scanner::Scanner(std::string &source) :
                 source(source)
 {}
 
-std::list<Token> Scanner::scanTokens() {
+std::vector<Token> Scanner::scanTokens() {
     while(!isAtEnd()) {
         start=current;
         scanToken();

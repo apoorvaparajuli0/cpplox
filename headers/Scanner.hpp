@@ -1,14 +1,14 @@
 #ifndef SCANNER_HPP
 #define SCANNER_HPP
 
-#include "list"
+#include "vector"
 #include "unordered_map"
 #include "Token.hpp"
 
 class Scanner {
     private:
         std::string source;
-        std::list<Token> tokens;
+        std::vector<Token> tokens;
         int start = 0;
         int current = 0;
         int line = 1;
@@ -36,7 +36,7 @@ class Scanner {
     public:
         Scanner(std::string &source);
     
-    std::list<Token> scanTokens();
+    std::vector<Token> scanTokens();
 };
 
 #endif
