@@ -4,6 +4,8 @@
 #include "string"
 #include "variant"
 #include "sstream"
+#include "any"
+#include "typeinfo"
 #include "TokenType.hpp"
 
 using Object = std::variant<std::nullptr_t, std::string, double, bool>;
@@ -27,35 +29,6 @@ class Token {
         return to_str.str();
     }
 
-    template<typename T>
-    static std::string ResolveType(T var_literal) {
-        std::stringstream to_str;
-        to_str << var_literal;
-        if(to_str.str() == "true" || to_str.str() == "false") return "bool";
-
-        std::string out_str = to_str.str();
-        for(char c : out_str) {
-            if(!(c >= 48 && c <= 57)) {
-                return "string";
-            } else if((c == out_str.back()) && (c >= 48 && c <= 57)) {
-                return "number";
-            }
-        }
-
-        return to_str.str();
-    }
-
-    struct TypeResolver {
-        std::string operator()(std::nullptr_t empty_literal) {
-            (void)empty_literal;
-            return "null";
-        };
-
-        std::string operator()(bool var_literal) const { return ResolveType(var_literal); }
-        std::string operator()(double var_literal) const { return ResolveType(var_literal); }
-        std::string operator()(std::string var_literal) const { return ResolveType(var_literal); }
-    };
-
     struct Resolver {
         std::string operator()(std::nullptr_t empty_literal) {
             (void)empty_literal;
@@ -65,6 +38,37 @@ class Token {
         std::string operator()(bool var_literal) const { return VariantResolver(var_literal); }
         std::string operator()(double var_literal) const { return VariantResolver(var_literal); }
         std::string operator()(std::string var_literal) const { return VariantResolver(var_literal); }
+    };
+
+    template<typename T>
+    static std::any ResolveValue(T var_literal) {
+        return var_literal;
+    }
+
+    struct ValueResolver {
+        std::any operator()(std::nullptr_t empty_literal) {
+            (void)empty_literal;
+            return empty_literal;
+        }
+
+        std::any operator()(bool var_literal) const { return ResolveValue(var_literal); }
+        std::any operator()(double var_literal) const { return ResolveValue(var_literal); }
+        std::any operator()(std::string var_literal) const { return ResolveValue(var_literal); }
+    };
+
+    template<typename T>
+    static const std::type_info& ResolveType(T var_literal) {
+        return typeid(var_literal);
+    }
+
+    struct TypeResolver {
+        const std::type_info& operator()(std::nullptr_t empty_literal) {
+            return typeid(empty_literal); 
+        }
+
+        const std::type_info& operator()(bool var_literal) const { return ResolveType(var_literal); }
+        const std::type_info& operator()(double var_literal) const { return ResolveType(var_literal); }
+        const std::type_info& operator()(std::string var_literal) const { return ResolveType(var_literal); }
     };
 };
 

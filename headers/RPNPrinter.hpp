@@ -1,5 +1,5 @@
-#ifndef RPNPrinter_HPP
-#define RPNPrinter_HPP
+#ifndef RPNPRINTER_HPP
+#define RPNPRINTER_HPP
 
 //CHALLENGE 5.3: Create a Reverse Polish Notation Printer
 

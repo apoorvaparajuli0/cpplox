@@ -42,6 +42,8 @@ class Parser {
         Token consume(TokenType type, std::string message);
         ParseError error(Token token, std::string message);
         void synchronize();
+        expr_ptr parseBinaryExpression(std::initializer_list<TokenType> tokenTypes, expr_ptr (Parser::* l_operand)(), expr_ptr (Parser::* r_operand)());
+
 };
 
 #endif

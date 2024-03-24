@@ -10,124 +10,93 @@ expr_ptr Parser::parse() {
 }
 
 expr_ptr Parser::expression() {
-    return ternary();
-    // return equality();
-}
-
-expr_ptr Parser::ternary() {
-    if(match({QUESTION})) {
-        try {
-            expr_ptr right_err = branch();
-        } catch(ParseError& err) {
-            throw error(peek(), "An Expression Must Precede the '?' Operator");
-        }
-    }
-
-    expr_ptr expr = equality();
-
-    while(match({QUESTION})) {
-        Token op = previous();
-        expr_ptr right = branch();
-
-        expr_ptr temp(new Binary(std::move(expr), op, std::move(right)));
-        expr = std::move(temp);
-    }
-
-    return expr;
-}
-
-expr_ptr Parser::branch() {
-    if(match({COLON})) {
-        try {
-            expr_ptr right_err = comma();
-        } catch(ParseError& err) {
-            throw error(peek(), "An Expression Must Precede the ':' Operator");
-        }
-    }
-    
-    expr_ptr expr = comma();
-
-    if(!check(COLON)) {
-        throw error(peek(), "Branch ':' Is Missing From Ternary");
-    }
-
-    while(match({COLON})) {
-        Token op = previous();
-        expr_ptr right = comma();
-
-        expr_ptr temp(new Binary(std::move(expr), op, std::move(right)));
-        expr = std::move(temp);
-    }
-
-    return expr;
-}
-
-expr_ptr Parser::comma() {
-    if(match({COMMA})) {
-        try {
-            expr_ptr right_err = equality();
-        } catch(ParseError& err) {
-            throw error(peek(), "An Expression Must Precede the ',' Operator");
-        }
-    }
-
-    expr_ptr expr = equality();
-
-    while(match({COMMA})) {
-        Token op = previous();
-        expr_ptr right = equality();
-
-        expr_ptr temp(new Binary(std::move(expr), op, std::move(right)));
-        expr = std::move(temp);
-    }
-
-    return expr;
+    //CHALLENGE(S) 6.1 & 6.2:
+    // return ternary();
+    return equality();
 }
 
 /**
- * lots of redundancy among equality(), comparison(), etc., find some
- * way to generalize and create a helper method among binary expression types
+ * CHALLENGE(S) 6.1 & 6.2:
+ * Add Support for C-Style Ternary Operations
+ * and the Comma operator
 */
+
+// expr_ptr Parser::ternary() {
+//     if(match({QUESTION})) {
+//         try {
+//             expr_ptr right_err = branch();
+//         } catch(ParseError& err) {
+//             throw error(peek(), "An Expression Must Precede the '?' Operator");
+//         }
+//     }
+
+//     expr_ptr expr = parseBinaryExpression({QUESTION}, &Parser::equality , &Parser::branch );
+
+//     return expr;
+// }
+
+// expr_ptr Parser::branch() {
+//     if(match({COLON})) {
+//         try {
+//             expr_ptr right_err = comma();
+//         } catch(ParseError& err) {
+//             throw error(peek(), "An Expression Must Precede the ':' Operator");
+//         }
+//     }
+    
+//     expr_ptr expr = parseBinaryExpression({COLON}, &Parser::comma, &Parser::comma);
+
+//     return expr;
+// }
+
+// expr_ptr Parser::comma() {
+//     if(match({COMMA})) {
+//         try {
+//             expr_ptr right_err = equality();
+//         } catch(ParseError& err) {
+//             throw error(peek(), "An Expression Must Precede the ',' Operator");
+//         }
+//     }
+
+//     expr_ptr expr = parseBinaryExpression({COMMA}, &Parser::equality, &Parser::equality);
+
+//     return expr;
+// }
+
 expr_ptr Parser::equality() {
-    if(match({BANG_EQUAL, EQUAL_EQUAL})) {
-        try {
-            expr_ptr right_err = comparison();
-        } catch(ParseError& err) {
-            throw error(peek(), "An Expression Must Precede an Equality Operator");
-        }
-    }
+    /**
+     * CHALLENGE 6.3:
+     * Add Error Productions for Binary Operators
+     * Without LH Operands
+    */
+    // if(match({BANG_EQUAL, EQUAL_EQUAL})) {
+    //     try {
+    //         expr_ptr right_err = comparison();
+    //     } catch(ParseError& err) {
+    //         throw error(peek(), "An Expression Must Precede an Equality Operator");
+    //     }
+    // }
 
-    expr_ptr expr = comparison();
-
-    while(match({BANG_EQUAL, EQUAL_EQUAL})) {
-        Token op = previous();
-        expr_ptr right = comparison();
-
-        expr_ptr temp(new Binary(std::move(expr), op, std::move(right)));
-        expr = std::move(temp);
-    }
+    expr_ptr expr = parseBinaryExpression({BANG_EQUAL, EQUAL_EQUAL}, &Parser::comparison, &Parser::comparison);
 
     return expr;
 }
 
 expr_ptr Parser::comparison() {
-    if(match({GREATER, GREATER_EQUAL, LESS, LESS_EQUAL})) {
-        try {
-            expr_ptr right_err = term();
-        } catch(ParseError& err) {
-            throw error(peek(), "An Expression Must Precede a Comparison Operator");
-        }
-    }
+    /**
+     * CHALLENGE 6.3:
+     * Add Error Productions for Binary Operators
+     * Without LH Operands
+    */
+    // if(match({GREATER, GREATER_EQUAL, LESS, LESS_EQUAL})) {
+    //     try {
+    //         expr_ptr right_err = term();
+    //     } catch(ParseError& err) {
+    //         throw error(peek(), "An Expression Must Precede a Comparison Operator");
+    //     }
+    // }
 
-    expr_ptr expr = term();
-
-    while(match({GREATER, GREATER_EQUAL, LESS, LESS_EQUAL})) {
-        Token op = previous();
-        expr_ptr right = term();
-
-        expr_ptr temp(new Binary(std::move(expr), op, std::move(right)));
-        expr = std::move(temp);
-    }
+    expr_ptr expr = parseBinaryExpression({GREATER, GREATER_EQUAL, LESS, LESS_EQUAL}, &Parser::term, &Parser::term);
 
     return expr;
 }
@@ -139,50 +108,42 @@ expr_ptr Parser::comparison() {
  *  error production 
 */
 expr_ptr Parser::term() {
-
-    expr_ptr expr = factor();
-
-    while(match({MINUS, PLUS})) {
-        Token op = previous();
-        expr_ptr right = factor();
-
-        expr_ptr temp(new Binary(std::move(expr), op, std::move(right)));
-        expr = std::move(temp);
-    }
-
+    /**
+     * CHALLENGE 6.3:
+     * Add Error Productions for Binary Operators
+     * Without LH Operands
+    */
+    // if(match({PLUS})) {
+    //     try {
+    //         expr_ptr right_err = factor();
+    //     } catch(ParseError& err) {
+    //         throw error(peek(), "'+' Is Missing A Left Hand Operand");
+    //     }
+    // }
+    expr_ptr expr = parseBinaryExpression({MINUS, PLUS}, &Parser::factor, &Parser::factor);
     return expr;
 }
 
 expr_ptr Parser::factor() {
-    if(match({SLASH, STAR})) {
-        try {
-            expr_ptr right_err = unary();
-        } catch(ParseError& err) {
-            throw error(peek(), "An Expression Must Precede the Multiplication/Division Operators");
-        }
-    }
+    /**
+     * CHALLENGE 6.3:
+     * Add Error Productions for Binary Operators
+     * Without LH Operands
+    */
+    // if(match({SLASH, STAR})) {
+    //     try {
+    //         expr_ptr right_err = unary();
+    //     } catch(ParseError& err) {
+    //         throw error(peek(), "An Expression Must Precede the Multiplication/Division Operators");
+    //     }
+    // }
 
-    expr_ptr expr = unary();
-
-    while(match({SLASH, STAR})) {
-        Token op = previous();
-        expr_ptr right = unary();
-
-        expr_ptr temp(new Binary(std::move(expr), op, std::move(right)));
-        expr = std::move(temp);
-    }
+    expr_ptr expr = parseBinaryExpression({SLASH, STAR}, &Parser::unary, &Parser::unary);
 
     return expr;
 }
 
 expr_ptr Parser::unary() {
-    if(match({PLUS})) {
-        try {
-            expr_ptr right_err = unary();
-        } catch(ParseError& err) {
-            throw error(peek(), "'+' Cannot be Applied to Unary Expression");
-        }
-    }
     if(match({BANG, MINUS})) {
         Token op = previous();
         expr_ptr right = unary();
@@ -210,6 +171,20 @@ expr_ptr Parser::primary() {
     }
 
     throw error(peek(), "Expect Expression");
+}
+
+expr_ptr Parser::parseBinaryExpression(std::initializer_list<TokenType> tokenTypes, expr_ptr (Parser::* l_operand)(), expr_ptr (Parser::* r_operand)()) {
+    expr_ptr expr = (this->*l_operand)();
+
+    while(match(tokenTypes)) {
+        Token op = previous();
+        expr_ptr right = (this->*r_operand)();
+
+        expr_ptr temp(new Binary(std::move(expr), op, std::move(right)));
+        expr = std::move(temp);
+    }
+
+    return expr;
 }
 
 bool Parser::match(std::initializer_list<TokenType> types) {

@@ -1,5 +1,5 @@
-#ifndef AstPrinter_HPP
-#define AstPrinter_HPP
+#ifndef ASTPRINTER_HPP
+#define ASTPRINTER_HPP
 
 #include "initializer_list"
 #include "list"
