@@ -22,21 +22,21 @@ std::string AstPrinter::parenthesize(std::string name, std::initializer_list<con
     return {};
 }
 
-std::any AstPrinter::visitBinaryExpr(const Binary& expr) {
+Object AstPrinter::visitBinaryExpr(const Binary& expr) {
     return parenthesize(expr.operator_.lexeme, {std::move(expr.left.get()), std::move(expr.right.get())});
 }
 
-std::any AstPrinter::visitGroupingExpr(const Grouping& expr) {
+Object AstPrinter::visitGroupingExpr(const Grouping& expr) {
     return parenthesize("group", {std::move(expr.expression.get())});
 }
 
-std::any AstPrinter::visitLiteralExpr(const Literal& expr) {
+Object AstPrinter::visitLiteralExpr(const Literal& expr) {
     if(std::visit(Token::Resolver{}, expr.value) == "null") return "nil";
     oss << std::visit(Token::Resolver{}, expr.value);
 
     return std::string{""};
 }
 
-std::any AstPrinter::visitUnaryExpr(const Unary& expr) {
+Object AstPrinter::visitUnaryExpr(const Unary& expr) {
     return parenthesize(expr.operator_.lexeme, {std::move(expr.right.get())});
 }

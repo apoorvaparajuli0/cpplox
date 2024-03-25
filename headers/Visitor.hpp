@@ -35,7 +35,7 @@ class StmtVisitor {
 
 class Expr {
   public:
-    virtual std::any accept(ExprVisitor<std::any>& visitor) const = 0;
+    virtual Object accept(ExprVisitor<Object>& visitor) const = 0;
     virtual ~Expr() = default;
 };
 

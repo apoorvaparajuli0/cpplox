@@ -10,21 +10,21 @@ class Binary : public Expr {
     expr_ptr right;
 
   Binary(expr_ptr left, Token operator_, expr_ptr right);
-  std::any accept(ExprVisitor<std::any>& visitor) const override;
+  Object accept(ExprVisitor<Object>& visitor) const override;
 };
 class Grouping : public Expr {
   public:
     expr_ptr expression;
 
   Grouping(expr_ptr expression);
-  std::any accept(ExprVisitor<std::any>& visitor) const override;
+  Object accept(ExprVisitor<Object>& visitor) const override;
 };
 class Literal : public Expr {
   public:
     Object value;
 
   Literal(Object value);
-  std::any accept(ExprVisitor<std::any>& visitor) const override;
+  Object accept(ExprVisitor<Object>& visitor) const override;
 };
 class Unary : public Expr {
   public:
@@ -32,7 +32,7 @@ class Unary : public Expr {
     expr_ptr right;
 
   Unary(Token operator_, expr_ptr right);
-  std::any accept(ExprVisitor<std::any>& visitor) const override;
+  Object accept(ExprVisitor<Object>& visitor) const override;
 };
 
 #endif

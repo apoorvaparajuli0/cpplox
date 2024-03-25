@@ -14,16 +14,16 @@ void Interpreter::interpret(std::vector<stmt_ptr> statements) {
     }
 }
 
-std::any Interpreter::visitGroupingExpr(const Grouping& expr) {
+Object Interpreter::visitGroupingExpr(const Grouping& expr) {
     return evaluate(expr.expression);
 }
 
-std::any Interpreter::visitLiteralExpr(const Literal& expr) {
+Object Interpreter::visitLiteralExpr(const Literal& expr) {
     return expr.value;
 }
 
-std::any Interpreter::visitUnaryExpr(const Unary& expr) {
-    Object right = std::any_cast<Object>(evaluate(expr.right));
+Object Interpreter::visitUnaryExpr(const Unary& expr) {
+    Object right = evaluate(expr.right);
 
     switch(expr.operator_.type) {
         case MINUS:
@@ -33,7 +33,7 @@ std::any Interpreter::visitUnaryExpr(const Unary& expr) {
             return !isTruthy(right);
     }
 
-    return NULL;
+    return std::nullptr_t{};
 }
 
 void Interpreter::checkNumberOperand(Token op, Object operand) {
@@ -90,7 +90,7 @@ std::string Interpreter::stringify(Object object) {
     return std::any_cast<std::string>(std::visit(Token::ValueResolver{}, object));
 }
 
-std::any Interpreter::evaluate(const expr_ptr& expr) {
+Object Interpreter::evaluate(const expr_ptr& expr) {
     return expr.get()->accept(*this);
 }
 
@@ -104,15 +104,15 @@ std::any Interpreter::visitExpressionStmt(const Expression& stmt) {
 }
 
 std::any Interpreter::visitPrintStmt(const Print& stmt) {
-    Object value = std::any_cast<Object>(evaluate(stmt.expression));
+    Object value = evaluate(stmt.expression);
     printf("%s\n", stringify(value).c_str());
 
     return NULL;
 }
 
-std::any Interpreter::visitBinaryExpr(const Binary& expr) {
-    Object left = std::any_cast<Object>(evaluate(expr.left));
-    Object right = std::any_cast<Object>(evaluate(expr.right));
+Object Interpreter::visitBinaryExpr(const Binary& expr) {
+    Object left = evaluate(expr.left);
+    Object right = evaluate(expr.right);
 
     std::any left_operand = std::visit(Token::ValueResolver{}, left);
     std::any right_operand = std::visit(Token::ValueResolver{}, right);
@@ -161,5 +161,5 @@ std::any Interpreter::visitBinaryExpr(const Binary& expr) {
             return std::any_cast<double>(left) * std::any_cast<double>(right);
     }
 
-    return NULL;
+    return std::nullptr_t{};
 }

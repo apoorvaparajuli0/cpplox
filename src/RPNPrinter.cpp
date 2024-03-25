@@ -23,21 +23,21 @@ std::string RPNPrinter::format(std::string name, std::initializer_list<const Exp
     return {};
 }
 
-std::any RPNPrinter::visitBinaryExpr(const Binary& expr) {
+Object RPNPrinter::visitBinaryExpr(const Binary& expr) {
     return format(expr.operator_.lexeme, {std::move(expr.left.get()), std::move(expr.right.get())});
 }
 
-std::any RPNPrinter::visitGroupingExpr(const Grouping& expr) {
+Object RPNPrinter::visitGroupingExpr(const Grouping& expr) {
     return format("", {std::move(expr.expression.get())});
 }
 
-std::any RPNPrinter::visitLiteralExpr(const Literal& expr) {
+Object RPNPrinter::visitLiteralExpr(const Literal& expr) {
     if(std::visit(Token::Resolver{}, expr.value) == "null") return "nil";
     oss << std::visit(Token::Resolver{}, expr.value);
 
     return std::string{""};
 }
 
-std::any RPNPrinter::visitUnaryExpr(const Unary& expr) {
+Object RPNPrinter::visitUnaryExpr(const Unary& expr) {
     return format(expr.operator_.lexeme, {std::move(expr.right.get())});
 }
