@@ -7,6 +7,7 @@ add_library(src
             RPNPrinter.cpp  "../headers/RPNPrinter.hpp"
             Parser.cpp      "../headers/Parser.hpp"
             Interpreter.cpp "../headers/Interpreter.hpp"
-            
-            "../headers/TokenType.hpp" "../headers/Visitor.hpp"
+
+            "../headers/RuntimeError.hpp"
+            "../headers/TokenType.hpp"    "../headers/Visitor.hpp"
             )

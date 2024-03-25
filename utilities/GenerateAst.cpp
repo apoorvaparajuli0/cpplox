@@ -6,16 +6,24 @@ int main(int argc, char** argv) {
         exit(64);
     }
 
-    std::list<std::string> types = {
+    std::list<std::string> exprTypes = {
       "Binary   : expr_ptr left, Token operator_, expr_ptr right",
       "Grouping : expr_ptr expression",
       "Literal  : Object value",
       "Unary    : Token operator_, expr_ptr right"
     };
 
+    std::list<std::string> stmtTypes = {
+      "Expression : Expr expression",
+      "Print      : Expr expression"
+    };
+
     std::string outputDir = argv[1];
-    defineHeader(outputDir, "Expr", types);
-    defineAst(outputDir, "Expr", types);
+    defineHeader(outputDir, "Expr", exprTypes);
+    defineAst(outputDir, "Expr", exprTypes);
+
+    // defineHeader(outputDir, "Stmt", stmtTypes);
+    // defineAst(outputDir, "Stmt", stmtTypes);
 }
 
 void defineAst(std::string outputDir, std::string baseName, std::list<std::string> types) {
@@ -37,6 +45,7 @@ void defineHeader(std::string outputDir, std::string baseName, std::list<std::st
     std::string path = outputDir + "/headers/" + "Visitor" + ".hpp";
     std::ofstream out;
     out.open(path, std::ios::out);
+    out << "#ifndef VISITOR_HPP\n#define VISITOR_HPP\n\n";
     out << "#include \"any\"\n";
     out << "#include \"memory\"\n";
     out << "#include \"../headers/Token.hpp\"\n\n";
@@ -59,11 +68,14 @@ void defineHeader(std::string outputDir, std::string baseName, std::list<std::st
 
     out << "using expr_ptr = std::unique_ptr<Expr>;\n";
 
+    out << "\n#endif\n";
     out.close();
 
     path = outputDir + "/headers/" + baseName + ".hpp";
     out.open(path, std::ios::out);
 
+    out << "#ifndef " + toUpperCase(baseName) + "_HPP\n";
+    out << "#define " + toUpperCase(baseName) + "_HPP\n\n";
     out << "#include \"../headers/Visitor.hpp\"\n\n";
 
     for(std::string type : types) {
@@ -85,6 +97,7 @@ void defineHeader(std::string outputDir, std::string baseName, std::list<std::st
         out << "};\n";
     }
 
+    out << "\n#endif\n";
     out.close();
 }
 
@@ -105,10 +118,9 @@ void defineVisitor(std::ofstream& out, std::string baseName, std::list<std::stri
 
 void defineType(std::ofstream& out, std::string baseName, std::string className, std::string fieldList) {
 
-    out << "    " + className + "::" + className + "(" + fieldList + ") : \n";
+    out << className + "::" + className + "(" + fieldList + ") : \n";
 
     std::list<std::string> fields = split(fieldList, ", ");
-    out << "    ";
     for(std::string field : fields) {
         std::string name = split(field, " ").back();
         if(field != fields.back()) {
@@ -121,9 +133,23 @@ void defineType(std::ofstream& out, std::string baseName, std::string className,
     out << "{}";
     out << "\n";
 
-    out << "    std::any " + className + "::accept(Visitor<std::any>& visitor) const {\n";
-    out << "      return visitor.visit" + className + baseName + "(*this);\n";
-    out << "    }\n\n";
+    out << "std::any " + className + "::accept(Visitor<std::any>& visitor) const {\n";
+    out << "  return visitor.visit" + className + baseName + "(*this);\n";
+    out << "}\n\n";
+}
+
+std::string toUpperCase(std::string toUpper) {
+    std::string ret;
+
+    for(char c : toUpper) {
+        if(c >= 'a' && c <= 'z') {
+            ret.push_back(c - 32);
+        } else {
+            ret.push_back(c);
+        }
+    }
+
+    return ret;
 }
 
 std::string toLowerCase(std::string toLower) {

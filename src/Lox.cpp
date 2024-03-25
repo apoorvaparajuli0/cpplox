@@ -7,6 +7,8 @@
 #include "../headers/AstPrinter.hpp"
 
 bool Lox::hadError = false;
+bool Lox::hadRuntimeError = false;
+Interpreter Lox::interpreter = Interpreter();
 
 void Lox::runFile(std::string path) {
     std::ifstream fileBuffer(path, std::ios::in | std::ios::binary);
@@ -23,6 +25,7 @@ void Lox::runFile(std::string path) {
     run(std::string(bytes.begin(), bytes.end()));
 
     if(hadError) exit(65); 
+    if(hadRuntimeError) exit(70);
 }
 
 void Lox::runPrompt() {
@@ -46,11 +49,8 @@ void Lox::run(std::string src) {
     expr_ptr expression = parser.parse();
 
     if(hadError) return;
-
-    AstPrinter printer;
-    std::initializer_list<expr_ptr> exprs = {std::move(expression)};
     
-    printf("%s\n", printer.print(exprs).c_str());
+    interpreter.interpret(std::move(expression));
 }
 
 void Lox::error(int line, std::string message) {
@@ -69,4 +69,9 @@ void Lox::error(Token token, std::string message) {
     } else {
       report(token.line, " at '" + token.lexeme + "'", message);
     }
+}
+
+void Lox::runtimeError(RuntimeError error) {
+    fprintf(stderr,"%s\n[line %d ]", error.what(), error.token.line);
+    hadRuntimeError = true;
 }

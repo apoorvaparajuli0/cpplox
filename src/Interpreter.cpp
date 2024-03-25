@@ -1,5 +1,16 @@
 #include "../headers/Interpreter.hpp"
+#include "../headers/RuntimeError.hpp"
+#include "../headers/Lox.hpp"
 #include "utility"
+
+void Interpreter::interpret(expr_ptr expression) {
+    try {
+        Object value = std::any_cast<Object>(evaluate(expression));
+        printf("%s\n", stringify(value).c_str());
+    } catch(RuntimeError& err) {
+        Lox::runtimeError(err);
+    }
+}
 
 std::any Interpreter::visitGroupingExpr(const Grouping& expr) {
     return evaluate(expr.expression);
@@ -9,21 +20,28 @@ std::any Interpreter::visitLiteralExpr(const Literal& expr) {
     return expr.value;
 }
 
-/**
- * This is a little hacky, we're gonna have to make sure to throw a runtime error if a non-double
- * operand is resolved from the variant prior to casting it to a double
-*/
 std::any Interpreter::visitUnaryExpr(const Unary& expr) {
     Object right = std::any_cast<Object>(evaluate(expr.right));
 
     switch(expr.operator_.type) {
         case MINUS:
+            checkNumberOperand(expr.operator_, right);
             return -(std::any_cast<double>(std::visit(Token::ValueResolver{}, right)));
         case BANG:
             return !isTruthy(right);
     }
 
     return NULL;
+}
+
+void Interpreter::checkNumberOperand(Token op, Object operand) {
+    if(std::holds_alternative<double>(operand)) return;
+    throw RuntimeError(op, "Operand Must be a Number");
+}
+
+void Interpreter::checkNumberOperands(Token op, Object left, Object right) {
+    if(std::holds_alternative<double>(left) && std::holds_alternative<double>(right)) return;
+    throw RuntimeError(op, "Operands Must be Numbers");
 }
 
 bool Interpreter::isTruthy(Object object) {
@@ -52,6 +70,24 @@ bool Interpreter::isEqual(Object a, Object b) {
     return equality(a, b);
 }
 
+std::string Interpreter::stringify(Object object) {
+    if(std::holds_alternative<std::nullptr_t>(object)) return "nil";
+    if(std::holds_alternative<double>(object)) {
+        std::stringstream oss;
+        oss << std::any_cast<double>(std::visit(Token::ValueResolver{}, object));
+        if(oss.str().find(".0") != std::string::npos) {
+            return oss.str().substr(0, oss.str().find(".0"));
+        }
+        return oss.str();
+    }
+
+    if(std::holds_alternative<bool>(object)) {
+        return std::to_string(std::any_cast<bool>(std::visit(Token::ValueResolver{}, object)));
+    }
+
+    return std::any_cast<std::string>(std::visit(Token::ValueResolver{}, object));
+}
+
 std::any Interpreter::evaluate(const expr_ptr& expr) {
     return expr.get()->accept(*this);
 }
@@ -65,29 +101,41 @@ std::any Interpreter::visitBinaryExpr(const Binary& expr) {
 
     switch(expr.operator_.type) {
         case GREATER:
-            return std::any_cast<double>(left) > std::any_cast<double>(right);
+            checkNumberOperands(expr.operator_, left, right);
+            return std::any_cast<double>(left_operand) > std::any_cast<double>(right_operand);
         case GREATER_EQUAL:
-            return std::any_cast<double>(left) >= std::any_cast<double>(right);
+            checkNumberOperands(expr.operator_, left, right);
+            return std::any_cast<double>(left_operand) >= std::any_cast<double>(right_operand);
         case LESS:
-            return std::any_cast<double>(left) < std::any_cast<double>(right);
+            checkNumberOperands(expr.operator_, left, right);
+            return std::any_cast<double>(left_operand) < std::any_cast<double>(right_operand);
         case LESS_EQUAL:
-            return std::any_cast<double>(left) <= std::any_cast<double>(right);
+            checkNumberOperands(expr.operator_, left, right);
+            return std::any_cast<double>(left_operand) <= std::any_cast<double>(right_operand);
 
         case BANG_EQUAL: return !isEqual(left, right);
         case EQUAL_EQUAL: return isEqual(left, right);
 
         case MINUS:
-            return std::any_cast<double>(left) - std::any_cast<double>(right);
+            checkNumberOperands(expr.operator_, left, right);
+            return std::any_cast<double>(left_operand) - std::any_cast<double>(right_operand);
         case PLUS:
             if(std::holds_alternative<double>(left) && std::holds_alternative<double>(right)) {
-                return std::any_cast<double>(left) + std::any_cast<double>(right);
+                return std::any_cast<double>(left_operand) + std::any_cast<double>(right_operand);
+            } else if(std::holds_alternative<std::string>(left) != std::holds_alternative<std::string>(right)) {
+                return stringify(left) + stringify(right);
             } else if(std::holds_alternative<std::string>(left) && std::holds_alternative<std::string>(right)) {
-                return std::any_cast<std::string>(left) + std::any_cast<std::string>(right);
+                return std::any_cast<std::string>(left_operand) + std::any_cast<std::string>(right_operand);
+            } else {
+                throw RuntimeError(expr.operator_, "Operands Must be Two Numbers or Two Strings");
             }
             break;
         case SLASH:
+            checkNumberOperands(expr.operator_, left, right);
+            if(std::any_cast<double>(right) == 0) throw RuntimeError(expr.operator_, "Attempted Division By Zero");
             return std::any_cast<double>(left) / std::any_cast<double>(right);
         case STAR:
+            checkNumberOperands(expr.operator_, left, right);
             return std::any_cast<double>(left) * std::any_cast<double>(right);
     }
 
