@@ -24,3 +24,9 @@ Object Unary::accept(ExprVisitor<Object>& visitor) const {
   return visitor.visitUnaryExpr(*this);
 }
 
+Variable::Variable(Token name) : 
+name{std::move(name)} {}
+Object Variable::accept(ExprVisitor<Object>& visitor) const {
+  return visitor.visitVariableExpr(*this);
+}
+

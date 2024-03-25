@@ -9,10 +9,12 @@ class Binary;
 class Grouping;
 class Literal;
 class Unary;
+class Variable;
 
 
 class Expression;
 class Print;
+class Var;
 
 
 template<class R>
@@ -22,6 +24,7 @@ class ExprVisitor {
     virtual R visitGroupingExpr(const Grouping& expr) = 0;
     virtual R visitLiteralExpr(const Literal& expr) = 0;
     virtual R visitUnaryExpr(const Unary& expr) = 0;
+    virtual R visitVariableExpr(const Variable& expr) = 0;
     virtual ~ExprVisitor() = default;
 };
 
@@ -30,6 +33,7 @@ class StmtVisitor {
   public:
     virtual R visitExpressionStmt(const Expression& stmt) = 0;
     virtual R visitPrintStmt(const Print& stmt) = 0;
+    virtual R visitVarStmt(const Var& stmt) = 0;
     virtual ~StmtVisitor() = default;
 };
 

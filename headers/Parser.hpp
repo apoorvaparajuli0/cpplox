@@ -33,8 +33,10 @@ class Parser {
         // expr_ptr branch();
         // expr_ptr comma();
         expr_ptr expression();
+        stmt_ptr declaration();
         stmt_ptr statement();
         stmt_ptr printStatement();
+        stmt_ptr varDeclaration();
         stmt_ptr expressionStatement();
         expr_ptr equality();
         bool match(std::initializer_list<TokenType> types);

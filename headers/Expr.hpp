@@ -34,5 +34,12 @@ class Unary : public Expr {
   Unary(Token operator_, expr_ptr right);
   Object accept(ExprVisitor<Object>& visitor) const override;
 };
+class Variable : public Expr {
+  public:
+    Token name;
+
+  Variable(Token name);
+  Object accept(ExprVisitor<Object>& visitor) const override;
+};
 
 #endif

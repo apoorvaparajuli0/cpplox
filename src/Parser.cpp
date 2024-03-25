@@ -5,7 +5,7 @@ std::vector<stmt_ptr> Parser::parse() {
     std::vector<stmt_ptr> statements;
 
     while(!isAtEnd()) {
-        statements.push_back(statement());
+        statements.push_back(declaration());
     }
 
     return statements;
@@ -15,6 +15,16 @@ expr_ptr Parser::expression() {
     //CHALLENGE(S) 6.1 & 6.2:
     // return ternary();
     return equality();
+}
+
+stmt_ptr Parser::declaration() {
+    try {
+        if(match({VAR})) return varDeclaration();
+        return statement();
+    } catch(ParseError& err) {
+        synchronize();
+        return std::nullptr_t{};
+    }
 }
 
 stmt_ptr Parser::statement() {
@@ -27,6 +37,18 @@ stmt_ptr Parser::printStatement() {
     consume(SEMICOLON, "Expect ';' after value");
 
     return stmt_ptr(new Print(std::move(value)));
+}
+
+stmt_ptr Parser::varDeclaration() {
+    Token name = consume(IDENTIFIER, "Expect variable name");
+
+    expr_ptr initializer = std::nullptr_t{};
+    if(match({EQUAL})) {
+        initializer = expression();
+    }
+
+    consume(SEMICOLON, "Expect ';' after variable declaration");
+    return stmt_ptr(new Var(name, std::move(initializer)));
 }
 
 stmt_ptr Parser::expressionStatement() {
@@ -181,6 +203,10 @@ expr_ptr Parser::primary() {
 
     if(match({NUMBER, STRING})) {
         return expr_ptr(new Literal(previous().literal));
+    }
+
+    if(match({IDENTIFIER})) {
+        return expr_ptr(new Variable(previous()));
     }
 
     if(match({LEFT_PAREN})) {

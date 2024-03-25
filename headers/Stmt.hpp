@@ -17,5 +17,13 @@ class Print : public Stmt {
   Print(expr_ptr expression);
   std::any accept(StmtVisitor<std::any>& visitor) const override;
 };
+class Var : public Stmt {
+  public:
+    Token name;
+    expr_ptr initializer;
+
+  Var(Token name, expr_ptr initializer);
+  std::any accept(StmtVisitor<std::any>& visitor) const override;
+};
 
 #endif

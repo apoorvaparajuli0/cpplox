@@ -12,3 +12,9 @@ std::any Print::accept(StmtVisitor<std::any>& visitor) const {
   return visitor.visitPrintStmt(*this);
 }
 
+Var::Var(Token name, expr_ptr initializer) : 
+name{std::move(name)}, initializer{std::move(initializer)} {}
+std::any Var::accept(StmtVisitor<std::any>& visitor) const {
+  return visitor.visitVarStmt(*this);
+}
+

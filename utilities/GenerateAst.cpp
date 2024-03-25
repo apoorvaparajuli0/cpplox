@@ -10,12 +10,14 @@ int main(int argc, char** argv) {
       "Binary   : expr_ptr left, Token operator_, expr_ptr right",
       "Grouping : expr_ptr expression",
       "Literal  : Object value",
-      "Unary    : Token operator_, expr_ptr right"
+      "Unary    : Token operator_, expr_ptr right",
+      "Variable : Token name"
     };
 
     std::list<std::string> stmtTypes = {
       "Expression : expr_ptr expression",
-      "Print      : expr_ptr expression"
+      "Print      : expr_ptr expression",
+      "Var        : Token name, expr_ptr initializer"       
     };
 
     std::string outputDir = argv[1];
