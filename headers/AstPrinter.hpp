@@ -5,7 +5,7 @@
 #include "list"
 #include "Expr.hpp"
 
-class AstPrinter : Visitor<std::any> {
+class AstPrinter : ExprVisitor<std::any> {
     public:
         std::string print(std::initializer_list<expr_ptr>& exprs);
         std::string parenthesize(std::string name, std::initializer_list<const Expr*> exprs);

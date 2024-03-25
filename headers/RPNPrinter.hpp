@@ -7,7 +7,7 @@
 #include "list"
 #include "Expr.hpp"
 
-class RPNPrinter : Visitor<std::any> {
+class RPNPrinter : ExprVisitor<std::any> {
     public:
         std::string print(std::initializer_list<expr_ptr>& exprs);
         std::string format(std::string name, std::initializer_list<const Expr*> exprs);

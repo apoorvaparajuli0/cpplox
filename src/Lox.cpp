@@ -46,11 +46,11 @@ void Lox::run(std::string src) {
     std::vector<Token> tokens = scanner.scanTokens();
 
     Parser parser = Parser(tokens);
-    expr_ptr expression = parser.parse();
+    std::vector<stmt_ptr> statements = parser.parse();
 
     if(hadError) return;
     
-    interpreter.interpret(std::move(expression));
+    interpreter.interpret(std::move(statements));
 }
 
 void Lox::error(int line, std::string message) {

@@ -1,12 +1,14 @@
 #include "../headers/Interpreter.hpp"
 #include "../headers/RuntimeError.hpp"
 #include "../headers/Lox.hpp"
+#include "../headers/Token.hpp"
 #include "utility"
 
-void Interpreter::interpret(expr_ptr expression) {
+void Interpreter::interpret(std::vector<stmt_ptr> statements) {
     try {
-        Object value = std::any_cast<Object>(evaluate(expression));
-        printf("%s\n", stringify(value).c_str());
+        for(const stmt_ptr& statement : statements) {
+            execute(statement);
+        }
     } catch(RuntimeError& err) {
         Lox::runtimeError(err);
     }
@@ -82,7 +84,7 @@ std::string Interpreter::stringify(Object object) {
     }
 
     if(std::holds_alternative<bool>(object)) {
-        return std::to_string(std::any_cast<bool>(std::visit(Token::ValueResolver{}, object)));
+        return std::any_cast<bool>(std::visit(Token::ValueResolver{}, object)) == true ? "true" : "false";
     }
 
     return std::any_cast<std::string>(std::visit(Token::ValueResolver{}, object));
@@ -90,6 +92,22 @@ std::string Interpreter::stringify(Object object) {
 
 std::any Interpreter::evaluate(const expr_ptr& expr) {
     return expr.get()->accept(*this);
+}
+
+void Interpreter::execute(const stmt_ptr& stmt) {
+    stmt.get()->accept(*this);
+}
+
+std::any Interpreter::visitExpressionStmt(const Expression& stmt) {
+    evaluate(stmt.expression);
+    return NULL;
+}
+
+std::any Interpreter::visitPrintStmt(const Print& stmt) {
+    Object value = std::any_cast<Object>(evaluate(stmt.expression));
+    printf("%s\n", stringify(value).c_str());
+
+    return NULL;
 }
 
 std::any Interpreter::visitBinaryExpr(const Binary& expr) {
@@ -122,9 +140,12 @@ std::any Interpreter::visitBinaryExpr(const Binary& expr) {
         case PLUS:
             if(std::holds_alternative<double>(left) && std::holds_alternative<double>(right)) {
                 return std::any_cast<double>(left_operand) + std::any_cast<double>(right_operand);
-            } else if(std::holds_alternative<std::string>(left) != std::holds_alternative<std::string>(right)) {
-                return stringify(left) + stringify(right);
-            } else if(std::holds_alternative<std::string>(left) && std::holds_alternative<std::string>(right)) {
+            } 
+            //CHALLENGE 7.2: When either operand of '+' is string, convert other operand to string and concatenate
+            // else if(std::holds_alternative<std::string>(left) != std::holds_alternative<std::string>(right)) {
+            //     return stringify(left) + stringify(right);
+            // } 
+            else if(std::holds_alternative<std::string>(left) && std::holds_alternative<std::string>(right)) {
                 return std::any_cast<std::string>(left_operand) + std::any_cast<std::string>(right_operand);
             } else {
                 throw RuntimeError(expr.operator_, "Operands Must be Two Numbers or Two Strings");
@@ -132,7 +153,8 @@ std::any Interpreter::visitBinaryExpr(const Binary& expr) {
             break;
         case SLASH:
             checkNumberOperands(expr.operator_, left, right);
-            if(std::any_cast<double>(right) == 0) throw RuntimeError(expr.operator_, "Attempted Division By Zero");
+            //CHALLENGE 7.3: Throw error for division by zero
+            // if(std::any_cast<double>(right) == 0) throw RuntimeError(expr.operator_, "Attempted Division By Zero");
             return std::any_cast<double>(left) / std::any_cast<double>(right);
         case STAR:
             checkNumberOperands(expr.operator_, left, right);

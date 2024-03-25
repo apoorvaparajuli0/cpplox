@@ -1,18 +1,38 @@
 #include "../headers/Parser.hpp"
 #include "../headers/Lox.hpp"
 
-expr_ptr Parser::parse() {
-    try {
-        return expression();
-    } catch(ParseError& error) {
-        return NULL;
+std::vector<stmt_ptr> Parser::parse() {
+    std::vector<stmt_ptr> statements;
+
+    while(!isAtEnd()) {
+        statements.push_back(statement());
     }
+
+    return statements;
 }
 
 expr_ptr Parser::expression() {
     //CHALLENGE(S) 6.1 & 6.2:
     // return ternary();
     return equality();
+}
+
+stmt_ptr Parser::statement() {
+    if(match({PRINT})) return printStatement();
+    return expressionStatement();
+}
+
+stmt_ptr Parser::printStatement() {
+    expr_ptr value = expression();
+    consume(SEMICOLON, "Expect ';' after value");
+
+    return stmt_ptr(new Print(std::move(value)));
+}
+
+stmt_ptr Parser::expressionStatement() {
+    expr_ptr expr = expression();
+    consume(SEMICOLON, "Expect ';' after expression");
+    return stmt_ptr(new Expression(std::move(expr)));
 }
 
 /**

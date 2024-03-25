@@ -14,34 +14,44 @@ int main(int argc, char** argv) {
     };
 
     std::list<std::string> stmtTypes = {
-      "Expression : Expr expression",
-      "Print      : Expr expression"
+      "Expression : expr_ptr expression",
+      "Print      : expr_ptr expression"
     };
 
     std::string outputDir = argv[1];
-    defineHeader(outputDir, "Expr", exprTypes);
-    defineAst(outputDir, "Expr", exprTypes);
-
-    // defineHeader(outputDir, "Stmt", stmtTypes);
-    // defineAst(outputDir, "Stmt", stmtTypes);
+    defineHeader(outputDir, "Expr", "Stmt", exprTypes, stmtTypes);
+    defineAst(outputDir, "Expr", "Stmt", exprTypes, stmtTypes);
 }
 
-void defineAst(std::string outputDir, std::string baseName, std::list<std::string> types) {
-    std::string path = outputDir + "/src/" + baseName + ".cpp";
+void defineAst(std::string outputDir, std::string exprName, std::string stmtName, std::list<std::string> exprTypes, std::list<std::string> stmtTypes) {
+    std::string expr_path = outputDir + "/src/" + exprName + ".cpp";    
+    std::string stmt_path = outputDir + "/src/" + stmtName + ".cpp";
+
     std::ofstream out;
-    out.open(path, std::ios::out);
+    out.open(expr_path, std::ios::out);
     out << "#include \"../headers/Expr.hpp\"\n\n";
 
-    for(std::string type : types) {
+    for(std::string type : exprTypes) {
         std::string className = trim(split(type, ":").front());
         std::string fields = trim(split(type, ":").back());
-        defineType(out, baseName, className, fields);
+        defineType(out, exprName, className, fields);
+    }
+
+    out.close();
+
+    out.open(stmt_path, std::ios::out);
+    out << "#include \"../headers/Stmt.hpp\"\n\n";
+
+    for(std::string type : stmtTypes) {
+        std::string className = trim(split(type, ":").front());
+        std::string fields = trim(split(type, ":").back());
+        defineType(out, stmtName, className, fields);
     }
 
     out.close();
 }
 
-void defineHeader(std::string outputDir, std::string baseName, std::list<std::string> types) {
+void defineHeader(std::string outputDir, std::string exprName, std::string stmtName, std::list<std::string> exprTypes, std::list<std::string> stmtTypes) {
     std::string path = outputDir + "/headers/" + "Visitor" + ".hpp";
     std::ofstream out;
     out.open(path, std::ios::out);
@@ -50,37 +60,56 @@ void defineHeader(std::string outputDir, std::string baseName, std::list<std::st
     out << "#include \"memory\"\n";
     out << "#include \"../headers/Token.hpp\"\n\n";
 
-    for(std::string type : types) {
+    for(std::string type : exprTypes) {
         std::string className = trim(split(type, ":").front());
         out << "class " + className + ";\n";
     }
 
-    defineVisitor(out,  baseName, types);
+    out << "\n\n";
+
+    for(std::string type : stmtTypes) {
+        std::string className = trim(split(type, ":").front());
+        out << "class " + className + ";\n";
+    }
 
     out << "\n";
-    out << "class " + baseName + " {\n";
+
+    defineVisitor(out,  exprName, exprTypes);
+    defineVisitor(out,  stmtName, stmtTypes);
+
+    out << "\n";
+    out << "class " + exprName + " {\n";
 
     out << "  public:\n";
-    out << "    virtual std::any accept(Visitor<std::any>& visitor) const = 0;\n";
+    out << "    virtual std::any accept(ExprVisitor<std::any>& visitor) const = 0;\n";
     out << "    virtual ~Expr() = default;\n";
+
+    out << "};\n\n";
+    out << "class " + stmtName + " {\n";
+
+    out << "  public:\n";
+    out << "    virtual std::any accept(StmtVisitor<std::any>& visitor) const = 0;\n";
+    out << "    virtual ~Stmt() = default;\n";
 
     out << "};\n\n";
 
     out << "using expr_ptr = std::unique_ptr<Expr>;\n";
+    out << "using stmt_ptr = std::unique_ptr<Stmt>;\n";
 
     out << "\n#endif\n";
+
     out.close();
 
-    path = outputDir + "/headers/" + baseName + ".hpp";
+    path = outputDir + "/headers/" + exprName + ".hpp";
     out.open(path, std::ios::out);
 
-    out << "#ifndef " + toUpperCase(baseName) + "_HPP\n";
-    out << "#define " + toUpperCase(baseName) + "_HPP\n\n";
+    out << "#ifndef " + toUpperCase(exprName) + "_HPP\n";
+    out << "#define " + toUpperCase(exprName) + "_HPP\n\n";
     out << "#include \"../headers/Visitor.hpp\"\n\n";
 
-    for(std::string type : types) {
+    for(std::string type : exprTypes) {
         std::string exprType = trim(split(type, ":").front());
-        out << "class " + exprType + " : public " + baseName + " {\n";
+        out << "class " + exprType + " : public " + exprName + " {\n";
 
         std::string fieldList = trim(split(type, ":").back());
         std::list<std::string> fields = split(fieldList, ", ");
@@ -92,7 +121,37 @@ void defineHeader(std::string outputDir, std::string baseName, std::list<std::st
 
         out << "\n";
         out << "  " + exprType + "(" + fieldList + ");\n";
-        out << "  std::any accept(Visitor<std::any>& visitor) const override;\n";
+        out << "  std::any accept(ExprVisitor<std::any>& visitor) const override;\n";
+
+        out << "};\n";
+    }
+
+    out << "\n#endif\n";
+
+    out.close();
+
+    path = outputDir + "/headers/" + stmtName + ".hpp";
+    out.open(path, std::ios::out);
+
+    out << "#ifndef " + toUpperCase(stmtName) + "_HPP\n";
+    out << "#define " + toUpperCase(stmtName) + "_HPP\n\n";
+    out << "#include \"../headers/Visitor.hpp\"\n\n";
+
+    for(std::string type : stmtTypes) {
+        std::string stmtType = trim(split(type, ":").front());
+        out << "class " + stmtType + " : public " + stmtName + " {\n";
+
+        std::string fieldList = trim(split(type, ":").back());
+        std::list<std::string> fields = split(fieldList, ", ");
+
+        out << "  public:\n";
+        for(std::string field : fields) {
+            out << "    " + field + ";\n";
+        }
+
+        out << "\n";
+        out << "  " + stmtType + "(" + fieldList + ");\n";
+        out << "  std::any accept(StmtVisitor<std::any>& visitor) const override;\n";
 
         out << "};\n";
     }
@@ -104,14 +163,14 @@ void defineHeader(std::string outputDir, std::string baseName, std::list<std::st
 void defineVisitor(std::ofstream& out, std::string baseName, std::list<std::string> types) {
     out << "\n";
     out << "template<class R>\n";
-    out << "class Visitor {\n";
+    out << "class " + baseName + "Visitor {\n";
     out << "  public:\n";
 
     for(std::string type : types) {
         std::string typeName = trim(split(type, ":").front());
         out << "    virtual R visit" + typeName + baseName + "(const " + typeName + "& " + toLowerCase(baseName) + ") = 0;\n";
     }
-    out << "    virtual ~Visitor() = default;\n";
+    out << "    virtual ~" + baseName + "Visitor() = default;\n";
 
     out << "};\n";
 }
@@ -133,7 +192,7 @@ void defineType(std::ofstream& out, std::string baseName, std::string className,
     out << "{}";
     out << "\n";
 
-    out << "std::any " + className + "::accept(Visitor<std::any>& visitor) const {\n";
+    out << "std::any " + className + "::accept(" + baseName + "Visitor<std::any>& visitor) const {\n";
     out << "  return visitor.visit" + className + baseName + "(*this);\n";
     out << "}\n\n";
 }

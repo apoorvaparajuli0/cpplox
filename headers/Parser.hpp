@@ -5,6 +5,7 @@
 #include "TokenType.hpp"
 #include "Token.hpp"
 #include "Expr.hpp"
+#include "Stmt.hpp"
 
 class Parser {
 
@@ -20,13 +21,21 @@ class Parser {
         Parser(std::vector<Token> tokens) {
             this->tokens = tokens;
         };
-        expr_ptr parse();
+        std::vector<stmt_ptr> parse();
     
     private:
-        expr_ptr ternary();
-        expr_ptr branch();
-        expr_ptr comma();
+        /**
+         * CHALLENGE(S) 6.1 & 6.2:
+         * Add Support for C-Style Ternary Operations
+         * and the Comma operator
+        */
+        // expr_ptr ternary();
+        // expr_ptr branch();
+        // expr_ptr comma();
         expr_ptr expression();
+        stmt_ptr statement();
+        stmt_ptr printStatement();
+        stmt_ptr expressionStatement();
         expr_ptr equality();
         bool match(std::initializer_list<TokenType> types);
         bool check(TokenType type);
