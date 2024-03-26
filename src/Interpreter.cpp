@@ -36,6 +36,10 @@ Object Interpreter::visitUnaryExpr(const Unary& expr) {
     return std::nullptr_t{};
 }
 
+Object Interpreter::visitVariableExpr(const Variable& expr) {
+    return environment.get(expr.name);
+}
+
 void Interpreter::checkNumberOperand(Token op, Object operand) {
     if(std::holds_alternative<double>(operand)) return;
     throw RuntimeError(op, "Operand Must be a Number");
@@ -107,6 +111,16 @@ std::any Interpreter::visitPrintStmt(const Print& stmt) {
     Object value = evaluate(stmt.expression);
     printf("%s\n", stringify(value).c_str());
 
+    return NULL;
+}
+
+std::any Interpreter::visitVarStmt(const Var& stmt) {
+    Object value = std::nullptr_t{};
+    if(stmt.initializer != std::nullptr_t{}) {
+        value = evaluate(stmt.initializer);
+    }
+
+    environment.define(stmt.name.lexeme, value);
     return NULL;
 }
 
