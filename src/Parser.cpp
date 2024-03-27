@@ -14,7 +14,7 @@ std::vector<stmt_ptr> Parser::parse() {
 expr_ptr Parser::expression() {
     //CHALLENGE(S) 6.1 & 6.2:
     // return ternary();
-    return equality();
+    return assignment();
 }
 
 stmt_ptr Parser::declaration() {
@@ -29,6 +29,8 @@ stmt_ptr Parser::declaration() {
 
 stmt_ptr Parser::statement() {
     if(match({PRINT})) return printStatement();
+    if(match({LEFT_BRACE})) return stmt_ptr(new Block(block()));
+
     return expressionStatement();
 }
 
@@ -55,6 +57,38 @@ stmt_ptr Parser::expressionStatement() {
     expr_ptr expr = expression();
     consume(SEMICOLON, "Expect ';' after expression");
     return stmt_ptr(new Expression(std::move(expr)));
+}
+
+std::vector<stmt_ptr> Parser::block() {
+    std::vector<stmt_ptr> statements;
+
+    while(!check(RIGHT_BRACE) && !isAtEnd()) {
+        statements.push_back(declaration());
+    }
+
+    consume(RIGHT_BRACE, "Expect '}' after block.");
+
+    return statements;
+}
+
+expr_ptr Parser::assignment() {
+    expr_ptr expr = equality();
+
+    if(match({EQUAL})) {
+        Token equals = previous();
+        expr_ptr value = assignment();
+
+        //supposedly similar to instanceof checks, probably not the best practice
+        //but whatevs
+        if(dynamic_cast<Variable*>(expr.get()) != nullptr) {
+            Token name = dynamic_cast<Variable*>(expr.get())->name;
+            return expr_ptr(new Assign(name, std::move(value)));
+        }
+
+        error(equals, "Invalid Assignment Target.");
+    }
+
+    return expr;
 }
 
 /**

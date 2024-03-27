@@ -1,5 +1,11 @@
 #include "../headers/Expr.hpp"
 
+Assign::Assign(Token name, expr_ptr value) : 
+name{std::move(name)}, value{std::move(value)} {}
+Object Assign::accept(ExprVisitor<Object>& visitor) const {
+  return visitor.visitAssignExpr(*this);
+}
+
 Binary::Binary(expr_ptr left, Token operator_, expr_ptr right) : 
 left{std::move(left)}, operator_{std::move(operator_)}, right{std::move(right)} {}
 Object Binary::accept(ExprVisitor<Object>& visitor) const {

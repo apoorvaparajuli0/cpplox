@@ -38,6 +38,8 @@ class Parser {
         stmt_ptr printStatement();
         stmt_ptr varDeclaration();
         stmt_ptr expressionStatement();
+        std::vector<stmt_ptr> block();
+        expr_ptr assignment();
         expr_ptr equality();
         bool match(std::initializer_list<TokenType> types);
         bool check(TokenType type);

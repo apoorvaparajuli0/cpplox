@@ -2,7 +2,15 @@
 #define STMT_HPP
 
 #include "../headers/Visitor.hpp"
+#include "vector"
 
+class Block : public Stmt {
+  public:
+    std::vector<stmt_ptr> statements;
+
+  Block(std::vector<stmt_ptr> statements);
+  std::any accept(StmtVisitor<std::any>& visitor) const override;
+};
 class Expression : public Stmt {
   public:
     expr_ptr expression;

@@ -5,6 +5,7 @@
 #include "memory"
 #include "../headers/Token.hpp"
 
+class Assign;
 class Binary;
 class Grouping;
 class Literal;
@@ -12,6 +13,7 @@ class Unary;
 class Variable;
 
 
+class Block;
 class Expression;
 class Print;
 class Var;
@@ -20,6 +22,7 @@ class Var;
 template<class R>
 class ExprVisitor {
   public:
+    virtual R visitAssignExpr(const Assign& expr) = 0;
     virtual R visitBinaryExpr(const Binary& expr) = 0;
     virtual R visitGroupingExpr(const Grouping& expr) = 0;
     virtual R visitLiteralExpr(const Literal& expr) = 0;
@@ -31,6 +34,7 @@ class ExprVisitor {
 template<class R>
 class StmtVisitor {
   public:
+    virtual R visitBlockStmt(const Block& stmt) = 0;
     virtual R visitExpressionStmt(const Expression& stmt) = 0;
     virtual R visitPrintStmt(const Print& stmt) = 0;
     virtual R visitVarStmt(const Var& stmt) = 0;

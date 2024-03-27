@@ -1,5 +1,11 @@
 #include "../headers/Stmt.hpp"
 
+Block::Block(std::vector<stmt_ptr> statements) : 
+statements{std::move(statements)} {}
+std::any Block::accept(StmtVisitor<std::any>& visitor) const {
+  return visitor.visitBlockStmt(*this);
+}
+
 Expression::Expression(expr_ptr expression) : 
 expression{std::move(expression)} {}
 std::any Expression::accept(StmtVisitor<std::any>& visitor) const {

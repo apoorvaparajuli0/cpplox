@@ -7,6 +7,7 @@ int main(int argc, char** argv) {
     }
 
     std::list<std::string> exprTypes = {
+      "Assign   : Token name, expr_ptr value",
       "Binary   : expr_ptr left, Token operator_, expr_ptr right",
       "Grouping : expr_ptr expression",
       "Literal  : Object value",
@@ -15,6 +16,7 @@ int main(int argc, char** argv) {
     };
 
     std::list<std::string> stmtTypes = {
+      "Block      : std::vector<stmt_ptr> statements",
       "Expression : expr_ptr expression",
       "Print      : expr_ptr expression",
       "Var        : Token name, expr_ptr initializer"       
@@ -34,8 +36,8 @@ void defineAst(std::string outputDir, std::string exprName, std::string stmtName
     out << "#include \"../headers/Expr.hpp\"\n\n";
 
     for(std::string type : exprTypes) {
-        std::string className = trim(split(type, ":").front());
-        std::string fields = trim(split(type, ":").back());
+        std::string className = trim(split(type, ": ").front());
+        std::string fields = trim(split(type, ": ").back());
         defineType(out, exprName, className, fields);
     }
 
@@ -45,8 +47,8 @@ void defineAst(std::string outputDir, std::string exprName, std::string stmtName
     out << "#include \"../headers/Stmt.hpp\"\n\n";
 
     for(std::string type : stmtTypes) {
-        std::string className = trim(split(type, ":").front());
-        std::string fields = trim(split(type, ":").back());
+        std::string className = trim(split(type, ": ").front());
+        std::string fields = trim(split(type, ": ").back());
         defineType(out, stmtName, className, fields);
     }
 
@@ -63,14 +65,14 @@ void defineHeader(std::string outputDir, std::string exprName, std::string stmtN
     out << "#include \"../headers/Token.hpp\"\n\n";
 
     for(std::string type : exprTypes) {
-        std::string className = trim(split(type, ":").front());
+        std::string className = trim(split(type, ": ").front());
         out << "class " + className + ";\n";
     }
 
     out << "\n\n";
 
     for(std::string type : stmtTypes) {
-        std::string className = trim(split(type, ":").front());
+        std::string className = trim(split(type, ": ").front());
         out << "class " + className + ";\n";
     }
 
@@ -96,9 +98,9 @@ void defineHeader(std::string outputDir, std::string exprName, std::string stmtN
     out << "};\n\n";
 
     out << "using expr_ptr = std::unique_ptr<Expr>;\n";
-    out << "using stmt_ptr = std::unique_ptr<Stmt>;\n";
+    out << "using stmt_ptr = std::unique_ptr<Stmt>;\n\n";
 
-    out << "\n#endif\n";
+    out << "#endif\n";
 
     out.close();
 
@@ -110,10 +112,10 @@ void defineHeader(std::string outputDir, std::string exprName, std::string stmtN
     out << "#include \"../headers/Visitor.hpp\"\n\n";
 
     for(std::string type : exprTypes) {
-        std::string exprType = trim(split(type, ":").front());
+        std::string exprType = trim(split(type, ": ").front());
         out << "class " + exprType + " : public " + exprName + " {\n";
 
-        std::string fieldList = trim(split(type, ":").back());
+        std::string fieldList = trim(split(type, ": ").back());
         std::list<std::string> fields = split(fieldList, ", ");
 
         out << "  public:\n";
@@ -137,13 +139,14 @@ void defineHeader(std::string outputDir, std::string exprName, std::string stmtN
 
     out << "#ifndef " + toUpperCase(stmtName) + "_HPP\n";
     out << "#define " + toUpperCase(stmtName) + "_HPP\n\n";
-    out << "#include \"../headers/Visitor.hpp\"\n\n";
+    out << "#include \"../headers/Visitor.hpp\"\n";
+    out << "#include \"vector\"\n\n";
 
     for(std::string type : stmtTypes) {
-        std::string stmtType = trim(split(type, ":").front());
+        std::string stmtType = trim(split(type, ": ").front());
         out << "class " + stmtType + " : public " + stmtName + " {\n";
 
-        std::string fieldList = trim(split(type, ":").back());
+        std::string fieldList = trim(split(type, ": ").back());
         std::list<std::string> fields = split(fieldList, ", ");
 
         out << "  public:\n";
@@ -169,7 +172,7 @@ void defineVisitor(std::ofstream& out, std::string baseName, std::list<std::stri
     out << "  public:\n";
 
     for(std::string type : types) {
-        std::string typeName = trim(split(type, ":").front());
+        std::string typeName = trim(split(type, ": ").front());
         out << "    virtual R visit" + typeName + baseName + "(const " + typeName + "& " + toLowerCase(baseName) + ") = 0;\n";
     }
     out << "    virtual ~" + baseName + "Visitor() = default;\n";

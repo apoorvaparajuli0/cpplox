@@ -2,6 +2,7 @@
 #include "../headers/RuntimeError.hpp"
 #include "../headers/Lox.hpp"
 #include "../headers/Token.hpp"
+#include "memory"
 #include "utility"
 
 void Interpreter::interpret(std::vector<stmt_ptr> statements) {
@@ -37,7 +38,7 @@ Object Interpreter::visitUnaryExpr(const Unary& expr) {
 }
 
 Object Interpreter::visitVariableExpr(const Variable& expr) {
-    return environment.get(expr.name);
+    return environment.get()->get(expr.name);
 }
 
 void Interpreter::checkNumberOperand(Token op, Object operand) {
@@ -102,7 +103,27 @@ void Interpreter::execute(const stmt_ptr& stmt) {
     stmt.get()->accept(*this);
 }
 
-std::any Interpreter::visitExpressionStmt(const Expression& stmt) {
+void Interpreter::executeBlock(const std::vector<stmt_ptr>& statements, const env_ptr& environment) {
+    env_ptr previous = this->environment;
+    try {
+        this->environment = environment;
+
+        for(const stmt_ptr& statement : statements) {
+            execute(statement);
+        }
+
+    } catch(...) {}
+
+    this->environment = previous;
+}
+
+std::any Interpreter::visitBlockStmt(const Block& stmt) {
+    executeBlock(std::move(stmt.statements), env_ptr(new Environment(environment)));
+
+    return NULL;
+}
+std::any Interpreter::visitExpressionStmt(const Expression &stmt)
+{
     evaluate(stmt.expression);
     return NULL;
 }
@@ -120,8 +141,15 @@ std::any Interpreter::visitVarStmt(const Var& stmt) {
         value = evaluate(stmt.initializer);
     }
 
-    environment.define(stmt.name.lexeme, value);
+    environment.get()->define(stmt.name.lexeme, value);
     return NULL;
+}
+
+Object Interpreter::visitAssignExpr(const Assign& expr) {
+    Object value = evaluate(expr.value);
+    environment.get()->assign(expr.name, value);
+
+    return value;
 }
 
 Object Interpreter::visitBinaryExpr(const Binary& expr) {

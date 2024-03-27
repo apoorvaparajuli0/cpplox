@@ -3,6 +3,14 @@
 
 #include "../headers/Visitor.hpp"
 
+class Assign : public Expr {
+  public:
+    Token name;
+    expr_ptr value;
+
+  Assign(Token name, expr_ptr value);
+  Object accept(ExprVisitor<Object>& visitor) const override;
+};
 class Binary : public Expr {
   public:
     expr_ptr left;
