@@ -24,6 +24,12 @@ Object Literal::accept(ExprVisitor<Object>& visitor) const {
   return visitor.visitLiteralExpr(*this);
 }
 
+Logical::Logical(expr_ptr left, Token operator_, expr_ptr right) : 
+left{std::move(left)}, operator_{std::move(operator_)}, right{std::move(right)} {}
+Object Logical::accept(ExprVisitor<Object>& visitor) const {
+  return visitor.visitLogicalExpr(*this);
+}
+
 Unary::Unary(Token operator_, expr_ptr right) : 
 operator_{std::move(operator_)}, right{std::move(right)} {}
 Object Unary::accept(ExprVisitor<Object>& visitor) const {

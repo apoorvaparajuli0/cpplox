@@ -9,14 +9,17 @@ class Assign;
 class Binary;
 class Grouping;
 class Literal;
+class Logical;
 class Unary;
 class Variable;
 
 
 class Block;
 class Expression;
+class If;
 class Print;
 class Var;
+class While;
 
 
 template<class R>
@@ -26,6 +29,7 @@ class ExprVisitor {
     virtual R visitBinaryExpr(const Binary& expr) = 0;
     virtual R visitGroupingExpr(const Grouping& expr) = 0;
     virtual R visitLiteralExpr(const Literal& expr) = 0;
+    virtual R visitLogicalExpr(const Logical& expr) = 0;
     virtual R visitUnaryExpr(const Unary& expr) = 0;
     virtual R visitVariableExpr(const Variable& expr) = 0;
     virtual ~ExprVisitor() = default;
@@ -36,8 +40,10 @@ class StmtVisitor {
   public:
     virtual R visitBlockStmt(const Block& stmt) = 0;
     virtual R visitExpressionStmt(const Expression& stmt) = 0;
+    virtual R visitIfStmt(const If& stmt) = 0;
     virtual R visitPrintStmt(const Print& stmt) = 0;
     virtual R visitVarStmt(const Var& stmt) = 0;
+    virtual R visitWhileStmt(const While& stmt) = 0;
     virtual ~StmtVisitor() = default;
 };
 

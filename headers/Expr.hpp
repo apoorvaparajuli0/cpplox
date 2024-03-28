@@ -34,6 +34,15 @@ class Literal : public Expr {
   Literal(Object value);
   Object accept(ExprVisitor<Object>& visitor) const override;
 };
+class Logical : public Expr {
+  public:
+    expr_ptr left;
+    Token operator_;
+    expr_ptr right;
+
+  Logical(expr_ptr left, Token operator_, expr_ptr right);
+  Object accept(ExprVisitor<Object>& visitor) const override;
+};
 class Unary : public Expr {
   public:
     Token operator_;

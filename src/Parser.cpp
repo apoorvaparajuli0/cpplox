@@ -28,10 +28,83 @@ stmt_ptr Parser::declaration() {
 }
 
 stmt_ptr Parser::statement() {
+    if(match({FOR})) return forStatement();
+    if(match({IF})) return ifStatement();
     if(match({PRINT})) return printStatement();
+    if(match({WHILE})) return whileStatement();
     if(match({LEFT_BRACE})) return stmt_ptr(new Block(block()));
 
     return expressionStatement();
+}
+
+stmt_ptr Parser::forStatement() {
+    consume(LEFT_PAREN, "Expect '(' after 'for'.");
+    stmt_ptr initializer;
+
+    if(match({SEMICOLON})) {
+        initializer = std::nullptr_t{};
+    } else if(match({VAR})) {
+        initializer = varDeclaration();
+    } else {
+        initializer = expressionStatement();
+    }
+
+    expr_ptr condition = std::nullptr_t{};
+    if(!check(SEMICOLON)) {
+        condition = expression();
+    }
+
+    consume(SEMICOLON, "Expect ';' after loop condition");
+
+    expr_ptr increment = std::nullptr_t{};
+    if(!check(RIGHT_PAREN)) {
+        increment = expression();
+    }
+    consume(RIGHT_PAREN, "Expect ')' after for clauses.");
+
+    stmt_ptr body = statement();
+
+    if(increment != std::nullptr_t{}) {
+        std::vector<stmt_ptr> block_list; 
+        block_list.push_back(std::move(body));
+        block_list.push_back(stmt_ptr(new Expression(std::move(increment))));
+
+        stmt_ptr temp(new Block(std::move(block_list)));
+        body = std::move(temp);
+    }
+
+    if(condition == std::nullptr_t{}) {
+        expr_ptr temp(new Literal(true)); 
+        condition = std::move(temp);
+    }
+
+    stmt_ptr desugar(new While(std::move(condition), std::move(body)));
+    body = std::move(desugar);
+
+    if(initializer != std::nullptr_t{}) {
+        std::vector<stmt_ptr> block_list; 
+        block_list.push_back(std::move(initializer));
+        block_list.push_back(std::move(body));
+
+        stmt_ptr temp(new Block(std::move(block_list)));
+        body = std::move(temp);
+    }
+
+    return body;
+}
+
+stmt_ptr Parser::ifStatement() {
+    consume(LEFT_PAREN, "Expect '(' after 'if'.");
+    expr_ptr condition = expression();
+    consume(RIGHT_PAREN, "Expect ')' after if condition.");
+
+    stmt_ptr thenBranch = statement();
+    stmt_ptr elseBranch = std::nullptr_t{};
+    if(match({ELSE})) {
+        elseBranch = statement();
+    }
+
+    return stmt_ptr(new If(std::move(condition), std::move(thenBranch), std::move(elseBranch)));
 }
 
 stmt_ptr Parser::printStatement() {
@@ -53,6 +126,15 @@ stmt_ptr Parser::varDeclaration() {
     return stmt_ptr(new Var(name, std::move(initializer)));
 }
 
+stmt_ptr Parser::whileStatement() {
+    consume(LEFT_PAREN, "Expect '(' Before Condition.");
+    expr_ptr condition = expression();
+    consume(RIGHT_PAREN, "Expect ')' Before Condition.");
+    stmt_ptr body = statement();
+
+    return stmt_ptr(new While(std::move(condition), std::move(body)));
+}
+
 stmt_ptr Parser::expressionStatement() {
     expr_ptr expr = expression();
     //CHALLENGE 8.1: Add Support for Expression Evaluation in REPL
@@ -60,7 +142,7 @@ stmt_ptr Parser::expressionStatement() {
     //     return stmt_ptr(new Expression(std::move(expr), true));
     // }
     consume(SEMICOLON, "Expect ';' after expression");
-    return stmt_ptr(new Expression(std::move(expr), false));
+    return stmt_ptr(new Expression(std::move(expr)/*, false*/));
 }
 
 std::vector<stmt_ptr> Parser::block() {
@@ -76,7 +158,7 @@ std::vector<stmt_ptr> Parser::block() {
 }
 
 expr_ptr Parser::assignment() {
-    expr_ptr expr = equality();
+    expr_ptr expr = log_or();
 
     if(match({EQUAL})) {
         Token equals = previous();
@@ -90,6 +172,34 @@ expr_ptr Parser::assignment() {
         }
 
         error(equals, "Invalid Assignment Target.");
+    }
+
+    return expr;
+}
+
+expr_ptr Parser::log_or() {
+    expr_ptr expr = log_and();
+
+    while(match({OR})) {
+        Token op = previous();
+        expr_ptr right = log_and();
+        expr_ptr temp(new Logical(std::move(expr), op, std::move(right)));
+
+        expr = std::move(temp);
+    }
+
+    return expr;
+}
+
+expr_ptr Parser::log_and() {
+    expr_ptr expr = equality();
+
+    while(match({AND})) {
+        Token op = previous();
+        expr_ptr right = equality();
+        expr_ptr temp(new Logical(std::move(expr), op, std::move(right)));
+
+        expr = std::move(temp);
     }
 
     return expr;

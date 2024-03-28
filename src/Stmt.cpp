@@ -6,10 +6,16 @@ void Block::accept(StmtVisitor<void>& visitor) const {
   return visitor.visitBlockStmt(*this);
 }
 
-Expression::Expression(expr_ptr expression, bool pure) : 
-expression{std::move(expression)}, pure{std::move(pure)} {}
+Expression::Expression(expr_ptr expression) : 
+expression{std::move(expression)} {}
 void Expression::accept(StmtVisitor<void>& visitor) const {
   return visitor.visitExpressionStmt(*this);
+}
+
+If::If(expr_ptr condition, stmt_ptr thenBranch, stmt_ptr elseBranch) : 
+condition{std::move(condition)}, thenBranch{std::move(thenBranch)}, elseBranch{std::move(elseBranch)} {}
+void If::accept(StmtVisitor<void>& visitor) const {
+  return visitor.visitIfStmt(*this);
 }
 
 Print::Print(expr_ptr expression) : 
@@ -22,5 +28,11 @@ Var::Var(Token name, expr_ptr initializer) :
 name{std::move(name)}, initializer{std::move(initializer)} {}
 void Var::accept(StmtVisitor<void>& visitor) const {
   return visitor.visitVarStmt(*this);
+}
+
+While::While(expr_ptr condition, stmt_ptr body) : 
+condition{std::move(condition)}, body{std::move(body)} {}
+void While::accept(StmtVisitor<void>& visitor) const {
+  return visitor.visitWhileStmt(*this);
 }
 

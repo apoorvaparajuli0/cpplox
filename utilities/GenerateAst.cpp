@@ -11,6 +11,7 @@ int main(int argc, char** argv) {
       "Binary   : expr_ptr left, Token operator_, expr_ptr right",
       "Grouping : expr_ptr expression",
       "Literal  : Object value",
+      "Logical  : expr_ptr left, Token operator_, expr_ptr right",
       "Unary    : Token operator_, expr_ptr right",
       "Variable : Token name"
     };
@@ -19,8 +20,10 @@ int main(int argc, char** argv) {
     std::list<std::string> stmtTypes = {
       "Block      : std::vector<stmt_ptr> statements",
       "Expression : expr_ptr expression"/*, bool pure"*/,
+      "If         : expr_ptr condition, stmt_ptr thenBranch, stmt_ptr elseBranch",
       "Print      : expr_ptr expression",
-      "Var        : Token name, expr_ptr initializer"       
+      "Var        : Token name, expr_ptr initializer",
+      "While      : expr_ptr condition, stmt_ptr body"
     };
 
     std::string outputDir = argv[1];

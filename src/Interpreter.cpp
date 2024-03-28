@@ -23,6 +23,18 @@ Object Interpreter::visitLiteralExpr(const Literal& expr) {
     return expr.value;
 }
 
+Object Interpreter::visitLogicalExpr(const Logical& expr) {
+    Object left = evaluate(expr.left);
+
+    if(expr.operator_.type == TokenType::OR) {
+        if(isTruthy(left)) return left;
+    } else {
+        if(!isTruthy(left)) return left;
+    }
+
+    return evaluate(expr.right);
+}
+
 Object Interpreter::visitUnaryExpr(const Unary& expr) {
     Object right = evaluate(expr.right);
 
@@ -134,6 +146,16 @@ void Interpreter::visitExpressionStmt(const Expression &stmt)
     return;
 }
 
+void Interpreter::visitIfStmt(const If& stmt) {
+    if(isTruthy(evaluate(stmt.condition))) {
+        execute(stmt.thenBranch);
+    } else if(stmt.elseBranch != std::nullptr_t{}) {
+        execute(stmt.elseBranch);
+    }
+
+    return;
+}
+
 void Interpreter::visitPrintStmt(const Print& stmt) {
     Object value = evaluate(stmt.expression);
     printf("%s\n", stringify(value).c_str());
@@ -148,6 +170,14 @@ void Interpreter::visitVarStmt(const Var& stmt) {
     }
 
     environment.get()->define(stmt.name.lexeme, value);
+    return;
+}
+
+void Interpreter::visitWhileStmt(const While& stmt) {
+    while(isTruthy(evaluate(stmt.condition))) {
+        execute(stmt.body);
+    }
+
     return;
 }
 

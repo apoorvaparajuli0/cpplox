@@ -14,9 +14,17 @@ class Block : public Stmt {
 class Expression : public Stmt {
   public:
     expr_ptr expression;
-    bool pure;
 
-  Expression(expr_ptr expression, bool pure);
+  Expression(expr_ptr expression);
+  void accept(StmtVisitor<void>& visitor) const override;
+};
+class If : public Stmt {
+  public:
+    expr_ptr condition;
+    stmt_ptr thenBranch;
+    stmt_ptr elseBranch;
+
+  If(expr_ptr condition, stmt_ptr thenBranch, stmt_ptr elseBranch);
   void accept(StmtVisitor<void>& visitor) const override;
 };
 class Print : public Stmt {
@@ -32,6 +40,14 @@ class Var : public Stmt {
     expr_ptr initializer;
 
   Var(Token name, expr_ptr initializer);
+  void accept(StmtVisitor<void>& visitor) const override;
+};
+class While : public Stmt {
+  public:
+    expr_ptr condition;
+    stmt_ptr body;
+
+  While(expr_ptr condition, stmt_ptr body);
   void accept(StmtVisitor<void>& visitor) const override;
 };
 
