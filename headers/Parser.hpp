@@ -21,6 +21,7 @@ class Parser {
         Parser(std::vector<Token> tokens) {
             this->tokens = tokens;
         };
+
         std::vector<stmt_ptr> parse();
     
     private:

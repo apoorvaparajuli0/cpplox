@@ -1,11 +1,12 @@
 #include "../headers/Environment.hpp"
 
 void Environment::define(std::string name, Object value) {
-    values.insert({name, value});
+    values[name] = value;
 }
 
 Object Environment::get(Token name) {
-    if(values.contains(name.lexeme)) {
+    //CHALLENGE 8.2: Make it an Error to Access an Uninitialized Variable
+    if(values.contains(name.lexeme)) {// && !(std::visit(Token::Resolver{}, values[name.lexeme]) == "null")) {
         return values.at(name.lexeme);
     }
 
@@ -16,7 +17,7 @@ Object Environment::get(Token name) {
 
 void Environment::assign(Token name, Object value) {
     if(values.contains(name.lexeme)) {
-        values.insert({name.lexeme, value});
+        values[name.lexeme] = value;
         return;
     }
 

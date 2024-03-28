@@ -49,7 +49,7 @@ class Expr {
 
 class Stmt {
   public:
-    virtual std::any accept(StmtVisitor<std::any>& visitor) const = 0;
+    virtual void accept(StmtVisitor<void>& visitor) const = 0;
     virtual ~Stmt() = default;
 };
 

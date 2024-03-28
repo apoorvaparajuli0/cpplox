@@ -92,7 +92,7 @@ void defineHeader(std::string outputDir, std::string exprName, std::string stmtN
     out << "class " + stmtName + " {\n";
 
     out << "  public:\n";
-    out << "    virtual std::any accept(StmtVisitor<std::any>& visitor) const = 0;\n";
+    out << "    virtual void accept(StmtVisitor<void>& visitor) const = 0;\n";
     out << "    virtual ~Stmt() = default;\n";
 
     out << "};\n\n";
@@ -156,7 +156,7 @@ void defineHeader(std::string outputDir, std::string exprName, std::string stmtN
 
         out << "\n";
         out << "  " + stmtType + "(" + fieldList + ");\n";
-        out << "  std::any accept(StmtVisitor<std::any>& visitor) const override;\n";
+        out << "  void accept(StmtVisitor<void>& visitor) const override;\n";
 
         out << "};\n";
     }
@@ -200,7 +200,7 @@ void defineType(std::ofstream& out, std::string baseName, std::string className,
     if(baseName == "Expr") {
         out << "Object " + className + "::accept(" + baseName + "Visitor<Object>& visitor) const {\n";
     } else {
-        out << "std::any " + className + "::accept(" + baseName + "Visitor<std::any>& visitor) const {\n";
+        out << "void " + className + "::accept(" + baseName + "Visitor<void>& visitor) const {\n";
     }
 
     out << "  return visitor.visit" + className + baseName + "(*this);\n";

@@ -7,7 +7,7 @@
 #include "Stmt.hpp"
 #include "vector"
 
-class Interpreter : ExprVisitor<Object>, StmtVisitor<std::any> {
+class Interpreter : ExprVisitor<Object>, StmtVisitor<void> {
 
     public:
 
@@ -20,10 +20,10 @@ class Interpreter : ExprVisitor<Object>, StmtVisitor<std::any> {
         Object visitVariableExpr(const Variable& expr) override;
         Object visitAssignExpr(const Assign& expr) override;
 
-        std::any visitExpressionStmt(const Expression& stmt) override;
-        std::any visitPrintStmt(const Print& stmt) override;
-        std::any visitVarStmt(const Var& stmt) override;
-        std::any visitBlockStmt(const Block& stmt) override;
+        void visitExpressionStmt(const Expression& stmt) override;
+        void visitPrintStmt(const Print& stmt) override;
+        void visitVarStmt(const Var& stmt) override;
+        void visitBlockStmt(const Block& stmt) override;
 
     private:
         env_ptr environment = env_ptr(new Environment());

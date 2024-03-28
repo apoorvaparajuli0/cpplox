@@ -20,6 +20,7 @@ class Lox {
 
     private:
         static void run(std::string src);
+
         static void report(int line, std::string where, std::string message);
 };
 

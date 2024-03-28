@@ -9,21 +9,21 @@ class Block : public Stmt {
     std::vector<stmt_ptr> statements;
 
   Block(std::vector<stmt_ptr> statements);
-  std::any accept(StmtVisitor<std::any>& visitor) const override;
+  void accept(StmtVisitor<void>& visitor) const override;
 };
 class Expression : public Stmt {
   public:
     expr_ptr expression;
 
   Expression(expr_ptr expression);
-  std::any accept(StmtVisitor<std::any>& visitor) const override;
+  void accept(StmtVisitor<void>& visitor) const override;
 };
 class Print : public Stmt {
   public:
     expr_ptr expression;
 
   Print(expr_ptr expression);
-  std::any accept(StmtVisitor<std::any>& visitor) const override;
+  void accept(StmtVisitor<void>& visitor) const override;
 };
 class Var : public Stmt {
   public:
@@ -31,7 +31,7 @@ class Var : public Stmt {
     expr_ptr initializer;
 
   Var(Token name, expr_ptr initializer);
-  std::any accept(StmtVisitor<std::any>& visitor) const override;
+  void accept(StmtVisitor<void>& visitor) const override;
 };
 
 #endif

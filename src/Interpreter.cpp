@@ -117,32 +117,32 @@ void Interpreter::executeBlock(const std::vector<stmt_ptr>& statements, const en
     this->environment = previous;
 }
 
-std::any Interpreter::visitBlockStmt(const Block& stmt) {
+void Interpreter::visitBlockStmt(const Block& stmt) {
     executeBlock(std::move(stmt.statements), env_ptr(new Environment(environment)));
 
-    return NULL;
+    return;
 }
-std::any Interpreter::visitExpressionStmt(const Expression &stmt)
+void Interpreter::visitExpressionStmt(const Expression &stmt)
 {
     evaluate(stmt.expression);
-    return NULL;
+    return;
 }
 
-std::any Interpreter::visitPrintStmt(const Print& stmt) {
+void Interpreter::visitPrintStmt(const Print& stmt) {
     Object value = evaluate(stmt.expression);
     printf("%s\n", stringify(value).c_str());
 
-    return NULL;
+    return;
 }
 
-std::any Interpreter::visitVarStmt(const Var& stmt) {
+void Interpreter::visitVarStmt(const Var& stmt) {
     Object value = std::nullptr_t{};
     if(stmt.initializer != std::nullptr_t{}) {
         value = evaluate(stmt.initializer);
     }
 
     environment.get()->define(stmt.name.lexeme, value);
-    return NULL;
+    return;
 }
 
 Object Interpreter::visitAssignExpr(const Assign& expr) {
