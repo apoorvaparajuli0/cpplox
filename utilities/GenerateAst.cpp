@@ -15,9 +15,10 @@ int main(int argc, char** argv) {
       "Variable : Token name"
     };
 
+    //CHALLENGE 8.1: Add Support for Expression Evaluation in REPL
     std::list<std::string> stmtTypes = {
       "Block      : std::vector<stmt_ptr> statements",
-      "Expression : expr_ptr expression",
+      "Expression : expr_ptr expression"/*, bool pure"*/,
       "Print      : expr_ptr expression",
       "Var        : Token name, expr_ptr initializer"       
     };

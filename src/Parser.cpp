@@ -55,8 +55,12 @@ stmt_ptr Parser::varDeclaration() {
 
 stmt_ptr Parser::expressionStatement() {
     expr_ptr expr = expression();
+    //CHALLENGE 8.1: Add Support for Expression Evaluation in REPL
+    // if(!check(SEMICOLON)) {
+    //     return stmt_ptr(new Expression(std::move(expr), true));
+    // }
     consume(SEMICOLON, "Expect ';' after expression");
-    return stmt_ptr(new Expression(std::move(expr)));
+    return stmt_ptr(new Expression(std::move(expr), false));
 }
 
 std::vector<stmt_ptr> Parser::block() {

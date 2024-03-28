@@ -26,6 +26,11 @@ class Token {
     static std::string VariantResolver(T var_literal) {
         std::stringstream to_str;
         to_str << var_literal;
+        if(to_str.str() == "0") {
+            to_str.clear(), to_str.str(std::string()), to_str << "false";
+        } else if(to_str.str() == "1") {
+            to_str.clear(), to_str.str(std::string()), to_str << "true";
+        }
         return to_str.str();
     }
 

@@ -100,7 +100,13 @@ Object Interpreter::evaluate(const expr_ptr& expr) {
 }
 
 void Interpreter::execute(const stmt_ptr& stmt) {
-    stmt.get()->accept(*this);
+    //CHALLENGE 8.1: Add Support for Expression Evaluation in REPL
+    // if(dynamic_cast<Expression*>(stmt.get()) != nullptr && dynamic_cast<Expression*>(stmt.get())->pure) {
+    //     Object result = evaluate(dynamic_cast<Expression*>(stmt.get())->expression);
+    //     printf("%s\n", std::visit(Token::Resolver{}, result).c_str());
+    // } else {
+        stmt.get()->accept(*this);
+    // }
 }
 
 void Interpreter::executeBlock(const std::vector<stmt_ptr>& statements, const env_ptr& environment) {

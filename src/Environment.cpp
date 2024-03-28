@@ -6,7 +6,7 @@ void Environment::define(std::string name, Object value) {
 
 Object Environment::get(Token name) {
     //CHALLENGE 8.2: Make it an Error to Access an Uninitialized Variable
-    if(values.contains(name.lexeme)) {// && !(std::visit(Token::Resolver{}, values[name.lexeme]) == "null")) {
+    if(values.contains(name.lexeme)/* && !(std::visit(Token::Resolver{}, values[name.lexeme]) == "null")) */) {
         return values.at(name.lexeme);
     }
 

@@ -14,8 +14,9 @@ class Block : public Stmt {
 class Expression : public Stmt {
   public:
     expr_ptr expression;
+    bool pure;
 
-  Expression(expr_ptr expression);
+  Expression(expr_ptr expression, bool pure);
   void accept(StmtVisitor<void>& visitor) const override;
 };
 class Print : public Stmt {

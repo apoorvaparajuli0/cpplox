@@ -6,8 +6,8 @@ void Block::accept(StmtVisitor<void>& visitor) const {
   return visitor.visitBlockStmt(*this);
 }
 
-Expression::Expression(expr_ptr expression) : 
-expression{std::move(expression)} {}
+Expression::Expression(expr_ptr expression, bool pure) : 
+expression{std::move(expression)}, pure{std::move(pure)} {}
 void Expression::accept(StmtVisitor<void>& visitor) const {
   return visitor.visitExpressionStmt(*this);
 }
