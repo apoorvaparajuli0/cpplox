@@ -146,6 +146,12 @@ void Interpreter::visitExpressionStmt(const Expression &stmt)
     return;
 }
 
+//CHALLENGE 9.3: Add Support for Break Statements
+// void Interpreter::visitBreakStmt(const Break& stmt) {
+//     breakEncountered = true;
+//     return;
+// }
+
 void Interpreter::visitIfStmt(const If& stmt) {
     if(isTruthy(evaluate(stmt.condition))) {
         execute(stmt.thenBranch);
@@ -175,8 +181,16 @@ void Interpreter::visitVarStmt(const Var& stmt) {
 
 void Interpreter::visitWhileStmt(const While& stmt) {
     while(isTruthy(evaluate(stmt.condition))) {
+        //CHALLENGE 9.3: Add Support for Break Statements
+        // if(breakEncountered) {
+        //     break;
+        // }
+
         execute(stmt.body);
     }
+
+    //CHALLENGE 9.3: Add Support for Break Statements
+    // breakEncountered = false;
 
     return;
 }

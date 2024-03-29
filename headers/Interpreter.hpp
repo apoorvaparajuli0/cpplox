@@ -21,6 +21,9 @@ class Interpreter : ExprVisitor<Object>, StmtVisitor<void> {
         Object visitVariableExpr(const Variable& expr) override;
         Object visitAssignExpr(const Assign& expr) override;
 
+        //CHALLENGE 9.3: Add Support for Break Statements
+        // void visitBreakStmt(const Break& stmt) override;
+        
         void visitExpressionStmt(const Expression& stmt) override;
         void visitIfStmt(const If& stmt) override;
         void visitPrintStmt(const Print& stmt) override;
@@ -30,6 +33,11 @@ class Interpreter : ExprVisitor<Object>, StmtVisitor<void> {
 
     private:
         env_ptr environment = env_ptr(new Environment());
+
+        //CHALLENGE 9.3: Add Support for Break Statements
+        //kind of an inelegant solution to the "break" problem, but
+        //wanted to just finish up chapter
+        // bool breakEncountered = false;
 
         Object evaluate(const expr_ptr& expr);
         void execute(const stmt_ptr& stmt);

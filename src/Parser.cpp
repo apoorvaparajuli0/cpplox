@@ -28,6 +28,8 @@ stmt_ptr Parser::declaration() {
 }
 
 stmt_ptr Parser::statement() {
+    //CHALLENGE 9.3: Add Support for Break Statements
+    // if(match({BREAK})) return breakStatement();
     if(match({FOR})) return forStatement();
     if(match({IF})) return ifStatement();
     if(match({PRINT})) return printStatement();
@@ -38,6 +40,10 @@ stmt_ptr Parser::statement() {
 }
 
 stmt_ptr Parser::forStatement() {
+
+    //CHALLENGE 9.3: Add Support for Break Statements
+    // inLoop = true;
+
     consume(LEFT_PAREN, "Expect '(' after 'for'.");
     stmt_ptr initializer;
 
@@ -64,6 +70,14 @@ stmt_ptr Parser::forStatement() {
 
     stmt_ptr body = statement();
 
+    /**
+     * Cannot initialize vector with unique ptr's because
+     * initializer list elements are const, and subsequently
+     * don't allow "moving"
+     * 
+     * Only copying is allowed into an init list, but unique_ptr's
+     * can't be copied obviously
+    */
     if(increment != std::nullptr_t{}) {
         std::vector<stmt_ptr> block_list; 
         block_list.push_back(std::move(body));
@@ -90,8 +104,19 @@ stmt_ptr Parser::forStatement() {
         body = std::move(temp);
     }
 
+    //CHALLENGE 9.3: Add Support for Break Statements
+    // inLoop = false;
+
     return body;
 }
+
+//CHALLENGE 9.3: Add Support for Break Statements
+// stmt_ptr Parser::breakStatement() {
+//     consume(SEMICOLON, "';' Must Succeed Break Statement");
+//     if(!inLoop) throw error(previous(), "'break' statement must be enclosed in loop.");
+    
+//     return stmt_ptr(new Break(std::nullptr_t{}));
+// }
 
 stmt_ptr Parser::ifStatement() {
     consume(LEFT_PAREN, "Expect '(' after 'if'.");
@@ -127,11 +152,17 @@ stmt_ptr Parser::varDeclaration() {
 }
 
 stmt_ptr Parser::whileStatement() {
+    //CHALLENGE 9.3: Add Support for Break Statements
+    // inLoop = true;
+
     consume(LEFT_PAREN, "Expect '(' Before Condition.");
     expr_ptr condition = expression();
     consume(RIGHT_PAREN, "Expect ')' Before Condition.");
     stmt_ptr body = statement();
 
+    //CHALLENGE 9.3: Add Support for Break Statements
+    // inLoop = false;
+    
     return stmt_ptr(new While(std::move(condition), std::move(body)));
 }
 

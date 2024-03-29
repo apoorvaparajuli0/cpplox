@@ -12,6 +12,9 @@ class Parser {
     std::vector<Token> tokens;
     int current = 0;
 
+    //CHALLENGE 9.3: Add Support for Break Statements
+    // bool inLoop = false;
+
     public:
         class ParseError : std::runtime_error {
             public:
@@ -33,6 +36,10 @@ class Parser {
         // expr_ptr ternary();
         // expr_ptr branch();
         // expr_ptr comma();
+
+        //CHALLENGE 9.3: Add Support for Break Statements
+        // stmt_ptr breakStatement();
+        
         stmt_ptr declaration();
         stmt_ptr statement();
         stmt_ptr forStatement();
