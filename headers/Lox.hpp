@@ -2,9 +2,8 @@
 #define LOX_HPP
 
 #include "string"
-#include "Token.hpp"
+
 #include "RuntimeError.hpp"
-#include "Interpreter.hpp"
 
 class Lox {
     static bool hadError;

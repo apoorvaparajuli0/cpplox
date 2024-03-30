@@ -2,6 +2,7 @@
 #define EXPR_HPP
 
 #include "../headers/Visitor.hpp"
+#include "vector"
 
 class Assign : public Expr {
   public:
@@ -18,6 +19,15 @@ class Binary : public Expr {
     expr_ptr right;
 
   Binary(expr_ptr left, Token operator_, expr_ptr right);
+  Object accept(ExprVisitor<Object>& visitor) const override;
+};
+class Call : public Expr {
+  public:
+    expr_ptr callee;
+    Token paren;
+    std::vector<expr_ptr> arguments;
+
+  Call(expr_ptr callee, Token paren, std::vector<expr_ptr> arguments);
   Object accept(ExprVisitor<Object>& visitor) const override;
 };
 class Grouping : public Expr {

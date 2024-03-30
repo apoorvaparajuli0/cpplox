@@ -9,6 +9,7 @@ int main(int argc, char** argv) {
     std::list<std::string> exprTypes = {
       "Assign   : Token name, expr_ptr value",
       "Binary   : expr_ptr left, Token operator_, expr_ptr right",
+      "Call     : expr_ptr callee, Token paren, std::vector<expr_ptr> arguments", 
       "Grouping : expr_ptr expression",
       "Literal  : Object value",
       "Logical  : expr_ptr left, Token operator_, expr_ptr right",
@@ -22,6 +23,7 @@ int main(int argc, char** argv) {
     //"Break      : Object value",
       "Block      : std::vector<stmt_ptr> statements",
       "Expression : expr_ptr expression"/*, bool pure"*/,
+      "Function   : Token name, std::vector<Token> params, std::vector<stmt_ptr> body",
       "If         : expr_ptr condition, stmt_ptr thenBranch, stmt_ptr elseBranch",
       "Print      : expr_ptr expression",
       "Var        : Token name, expr_ptr initializer",
@@ -115,7 +117,8 @@ void defineHeader(std::string outputDir, std::string exprName, std::string stmtN
 
     out << "#ifndef " + toUpperCase(exprName) + "_HPP\n";
     out << "#define " + toUpperCase(exprName) + "_HPP\n\n";
-    out << "#include \"../headers/Visitor.hpp\"\n\n";
+    out << "#include \"../headers/Visitor.hpp\"\n";
+    out << "#include \"vector\"\n\n";
 
     for(std::string type : exprTypes) {
         std::string exprType = trim(split(type, ": ").front());
@@ -199,7 +202,7 @@ void defineType(std::ofstream& out, std::string baseName, std::string className,
             out << name + "{std::move(" + name + ")} ";
         }
     }
-    
+
     out << "{}";
     out << "\n";
 

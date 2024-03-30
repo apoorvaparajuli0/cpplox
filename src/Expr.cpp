@@ -12,6 +12,12 @@ Object Binary::accept(ExprVisitor<Object>& visitor) const {
   return visitor.visitBinaryExpr(*this);
 }
 
+Call::Call(expr_ptr callee, Token paren, std::vector<expr_ptr> arguments) : 
+callee{std::move(callee)}, paren{std::move(paren)}, arguments{std::move(arguments)} {}
+Object Call::accept(ExprVisitor<Object>& visitor) const {
+  return visitor.visitCallExpr(*this);
+}
+
 Grouping::Grouping(expr_ptr expression) : 
 expression{std::move(expression)} {}
 Object Grouping::accept(ExprVisitor<Object>& visitor) const {

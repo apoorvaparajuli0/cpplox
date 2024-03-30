@@ -2,10 +2,8 @@
 #define PARSER_HPP
 
 #include "vector"
-#include "TokenType.hpp"
-#include "Token.hpp"
-#include "Expr.hpp"
-#include "Stmt.hpp"
+
+#include "Visitor.hpp"
 
 class Parser {
 
@@ -48,6 +46,7 @@ class Parser {
         stmt_ptr varDeclaration();
         stmt_ptr whileStatement();
         stmt_ptr expressionStatement();
+        stmt_ptr function(std::string kind);
         std::vector<stmt_ptr> block();
 
         expr_ptr expression();
@@ -59,6 +58,8 @@ class Parser {
         expr_ptr term();
         expr_ptr factor();
         expr_ptr unary();
+        expr_ptr finishCall(expr_ptr& callee);
+        expr_ptr call();
         expr_ptr primary();
 
         bool match(std::initializer_list<TokenType> types);

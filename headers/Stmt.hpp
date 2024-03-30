@@ -18,6 +18,15 @@ class Expression : public Stmt {
   Expression(expr_ptr expression);
   void accept(StmtVisitor<void>& visitor) const override;
 };
+class Function : public Stmt {
+  public:
+    Token name;
+    std::vector<Token> params;
+    std::vector<stmt_ptr> body;
+
+  Function(Token name, std::vector<Token> params, std::vector<stmt_ptr> body);
+  void accept(StmtVisitor<void>& visitor) const override;
+};
 class If : public Stmt {
   public:
     expr_ptr condition;

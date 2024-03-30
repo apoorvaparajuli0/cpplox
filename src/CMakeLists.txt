@@ -12,6 +12,7 @@ add_library(src
             Interpreter.cpp "../headers/Interpreter.hpp"
             Environment.cpp "../headers/Environment.hpp"
 
-            "../headers/RuntimeError.hpp"
+            "../headers/LoxFunction.hpp"
+            "../headers/RuntimeError.hpp" "../headers/LoxCallable.hpp"
             "../headers/TokenType.hpp"    "../headers/Visitor.hpp"
             )

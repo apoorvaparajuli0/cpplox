@@ -1,4 +1,5 @@
 #include "../headers/Environment.hpp"
+#include "../headers/RuntimeError.hpp"
 
 void Environment::define(std::string name, Object value) {
     values[name] = value;

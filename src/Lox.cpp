@@ -1,10 +1,11 @@
 #include "iostream"
 #include "fstream"
 #include "vector"
-#include "../headers/Scanner.hpp"
+
 #include "../headers/Lox.hpp"
+#include "../headers/Interpreter.hpp"
+#include "../headers/Scanner.hpp"
 #include "../headers/Parser.hpp"
-#include "../headers/AstPrinter.hpp"
 
 bool Lox::hadError = false;
 bool Lox::hadRuntimeError = false;

@@ -3,8 +3,8 @@
 
 #include "unordered_map"
 #include "string"
-#include "../headers/Token.hpp"
-#include "../headers/RuntimeError.hpp"
+
+#include "Token.hpp"
 
 class Environment {
     public:

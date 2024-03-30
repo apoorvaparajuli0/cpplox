@@ -6,9 +6,11 @@
 #include "sstream"
 #include "any"
 #include "typeinfo"
-#include "TokenType.hpp"
 
-using Object = std::variant<std::nullptr_t, std::string, double, bool>;
+#include "TokenType.hpp"
+#include "LoxCallable.hpp"
+
+using Object = std::variant<std::nullptr_t, std::string, double, bool, call_ptr>;
 
 class Token {
     public:
@@ -43,10 +45,11 @@ class Token {
         std::string operator()(bool var_literal) const { return VariantResolver(var_literal); }
         std::string operator()(double var_literal) const { return VariantResolver(var_literal); }
         std::string operator()(std::string var_literal) const { return VariantResolver(var_literal); }
+        std::string operator()(call_ptr var_literal) const { return VariantResolver(var_literal); }
     };
 
     template<typename T>
-    static std::any ResolveValue(T var_literal) {
+    static std::any ResolveValue(T& var_literal) {
         return var_literal;
     }
 
@@ -59,6 +62,7 @@ class Token {
         std::any operator()(bool var_literal) const { return ResolveValue(var_literal); }
         std::any operator()(double var_literal) const { return ResolveValue(var_literal); }
         std::any operator()(std::string var_literal) const { return ResolveValue(var_literal); }
+        std::any operator()(call_ptr var_literal) const { return ResolveValue(var_literal); }
     };
 
     template<typename T>
@@ -74,6 +78,7 @@ class Token {
         const std::type_info& operator()(bool var_literal) const { return ResolveType(var_literal); }
         const std::type_info& operator()(double var_literal) const { return ResolveType(var_literal); }
         const std::type_info& operator()(std::string var_literal) const { return ResolveType(var_literal); }
+        const std::type_info& operator()(call_ptr var_literal) const { return ResolveType(var_literal); }
     };
 };
 

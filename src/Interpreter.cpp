@@ -1,9 +1,16 @@
+#include "memory"
+#include "utility"
+
 #include "../headers/Interpreter.hpp"
 #include "../headers/RuntimeError.hpp"
 #include "../headers/Lox.hpp"
-#include "../headers/Token.hpp"
-#include "memory"
-#include "utility"
+#include "../headers/Expr.hpp"
+#include "../headers/Stmt.hpp"
+#include "../headers/LoxFunction.hpp"
+
+Interpreter::Interpreter() {
+    globals.get()->define("clock", call_ptr(new Clock()));
+}
 
 void Interpreter::interpret(std::vector<stmt_ptr> statements) {
     try {
@@ -140,9 +147,16 @@ void Interpreter::visitBlockStmt(const Block& stmt) {
 
     return;
 }
-void Interpreter::visitExpressionStmt(const Expression &stmt)
+void Interpreter::visitExpressionStmt(const Expression& stmt)
 {
     evaluate(stmt.expression);
+    return;
+}
+
+void Interpreter::visitFunctionStmt(const Function& stmt) {
+    call_ptr function(new LoxFunction(stmt));
+    environment.get()->define(stmt.name.lexeme, function);
+
     return;
 }
 
@@ -255,3 +269,26 @@ Object Interpreter::visitBinaryExpr(const Binary& expr) {
 
     return std::nullptr_t{};
 }
+
+Object Interpreter::visitCallExpr(const Call& expr) {
+    Object callee = evaluate(expr.callee);
+
+    std::vector<Object> arguments; //std::any is Object for the most part
+    for (const expr_ptr& argument : expr.arguments) { 
+      arguments.push_back(evaluate(argument));
+    }
+
+    if(!std::holds_alternative<call_ptr>(callee)) {
+        throw RuntimeError(expr.paren, "Can only call functions and classes");
+    }
+
+    call_ptr function = std::any_cast<call_ptr>(std::visit(Token::ValueResolver{}, callee));
+
+    if(arguments.size() != function.get()->arity()) {
+        throw RuntimeError(expr.paren, "Expected " + stringify((double)function.get()->arity()) + " arguments but got " + stringify((double)arguments.size()) + ".");
+    }
+
+    return function.get()->call(*this, arguments);
+}
+
+

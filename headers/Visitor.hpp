@@ -7,6 +7,7 @@
 
 class Assign;
 class Binary;
+class Call;
 class Grouping;
 class Literal;
 class Logical;
@@ -16,6 +17,7 @@ class Variable;
 
 class Block;
 class Expression;
+class Function;
 class If;
 class Print;
 class Var;
@@ -27,6 +29,7 @@ class ExprVisitor {
   public:
     virtual R visitAssignExpr(const Assign& expr) = 0;
     virtual R visitBinaryExpr(const Binary& expr) = 0;
+    virtual R visitCallExpr(const Call& expr) = 0;
     virtual R visitGroupingExpr(const Grouping& expr) = 0;
     virtual R visitLiteralExpr(const Literal& expr) = 0;
     virtual R visitLogicalExpr(const Logical& expr) = 0;
@@ -40,6 +43,7 @@ class StmtVisitor {
   public:
     virtual R visitBlockStmt(const Block& stmt) = 0;
     virtual R visitExpressionStmt(const Expression& stmt) = 0;
+    virtual R visitFunctionStmt(const Function& stmt) = 0;
     virtual R visitIfStmt(const If& stmt) = 0;
     virtual R visitPrintStmt(const Print& stmt) = 0;
     virtual R visitVarStmt(const Var& stmt) = 0;
@@ -59,7 +63,7 @@ class Stmt {
     virtual ~Stmt() = default;
 };
 
-using expr_ptr = std::unique_ptr<Expr>;
-using stmt_ptr = std::unique_ptr<Stmt>;
+using expr_ptr = std::shared_ptr<Expr>;
+using stmt_ptr = std::shared_ptr<Stmt>;
 
 #endif

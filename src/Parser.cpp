@@ -1,4 +1,6 @@
 #include "../headers/Parser.hpp"
+#include "../headers/Stmt.hpp"
+#include "../headers/Expr.hpp"
 #include "../headers/Lox.hpp"
 
 std::vector<stmt_ptr> Parser::parse() {
@@ -19,6 +21,7 @@ expr_ptr Parser::expression() {
 
 stmt_ptr Parser::declaration() {
     try {
+        if(match({FUN})) return function("function");
         if(match({VAR})) return varDeclaration();
         return statement();
     } catch(ParseError& err) {
@@ -174,6 +177,27 @@ stmt_ptr Parser::expressionStatement() {
     // }
     consume(SEMICOLON, "Expect ';' after expression");
     return stmt_ptr(new Expression(std::move(expr)/*, false*/));
+}
+
+stmt_ptr Parser::function(std::string kind) {
+    Token name = consume(IDENTIFIER, "Expect " + kind + " name.");
+
+    consume(LEFT_PAREN, "Expect '(' after " + kind + " name.");
+    std::vector<Token> parameters;
+    if (!check(RIGHT_PAREN)) {
+      do {
+        if (parameters.size() >= 255) {
+          error(peek(), "Can't have more than 255 parameters.");
+        }
+        parameters.push_back(consume(IDENTIFIER, "Expect parameter name."));
+      } while (match({COMMA}));
+    }
+    consume(RIGHT_PAREN, "Expect ')' after parameters.");
+
+    consume(LEFT_BRACE, "Expect '{' before " + kind + " body.");
+    std::vector<stmt_ptr> body = block();
+
+    return stmt_ptr(new Function(name, parameters, std::move(body)));
 }
 
 std::vector<stmt_ptr> Parser::block() {
@@ -372,7 +396,36 @@ expr_ptr Parser::unary() {
         return expr_ptr(new Unary(op, std::move(right)));
     }
 
-    return primary();
+    return call();
+}
+
+expr_ptr Parser::finishCall(expr_ptr& callee) {
+    std::vector<expr_ptr> arguments;
+    if (!check(RIGHT_PAREN)) {
+      do {
+        if(arguments.size() >= 255) error(peek(), "Can't have more than 255 arguments.");
+        
+        arguments.push_back(expression());
+      } while (match({COMMA}));
+    }
+
+    Token paren = consume(RIGHT_PAREN, "Expect ')' after arguments.");
+
+    return expr_ptr(new Call(std::move(callee), paren, std::move(arguments)));
+}
+
+expr_ptr Parser::call() {
+    expr_ptr expr = primary();
+
+    while (true) { 
+      if (match({LEFT_PAREN})) {
+        expr = finishCall(expr);
+      } else {
+        break;
+      }
+    }
+
+    return expr;
 }
 
 expr_ptr Parser::primary() {
