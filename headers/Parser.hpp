@@ -61,6 +61,7 @@ class Parser {
         expr_ptr unary();
         expr_ptr finishCall(expr_ptr& callee);
         expr_ptr call();
+        expr_ptr lambda();
         expr_ptr primary();
 
         bool match(std::initializer_list<TokenType> types);

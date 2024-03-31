@@ -5,6 +5,8 @@
 #include "memory"
 #include "../headers/Token.hpp"
 
+//Expression Types
+class Lambda;
 class Assign;
 class Binary;
 class Call;
@@ -15,6 +17,7 @@ class Unary;
 class Variable;
 
 
+//Statement Types
 class Block;
 class Expression;
 class Function;
@@ -28,6 +31,7 @@ class While;
 template<class R>
 class ExprVisitor {
   public:
+    virtual R visitLambdaExpr(const Lambda& expr) = 0;
     virtual R visitAssignExpr(const Assign& expr) = 0;
     virtual R visitBinaryExpr(const Binary& expr) = 0;
     virtual R visitCallExpr(const Call& expr) = 0;

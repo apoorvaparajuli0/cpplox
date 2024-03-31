@@ -1,5 +1,11 @@
 #include "../headers/Expr.hpp"
 
+Lambda::Lambda(std::vector<Token> params, std::vector<stmt_ptr> body) : 
+params{std::move(params)}, body{std::move(body)} {}
+Object Lambda::accept(ExprVisitor<Object>& visitor) const {
+  return visitor.visitLambdaExpr(*this);
+}
+
 Assign::Assign(Token name, expr_ptr value) : 
 name{std::move(name)}, value{std::move(value)} {}
 Object Assign::accept(ExprVisitor<Object>& visitor) const {

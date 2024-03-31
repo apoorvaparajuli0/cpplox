@@ -18,6 +18,7 @@ class Interpreter : ExprVisitor<Object>, StmtVisitor<void> {
 
         Object visitBinaryExpr(const Binary& expr) override;
         Object visitCallExpr(const Call& expr) override;
+        Object visitLambdaExpr(const Lambda& expr) override;
         Object visitGroupingExpr(const Grouping& expr) override;
         Object visitLiteralExpr(const Literal& expr) override;
         Object visitLogicalExpr(const Logical& expr) override;

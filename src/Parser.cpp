@@ -21,7 +21,12 @@ expr_ptr Parser::expression() {
 
 stmt_ptr Parser::declaration() {
     try {
-        if(match({FUN})) return function("function");
+        if(match({FUN})) {
+            if(check(IDENTIFIER)) return function("function");
+            stmt_ptr ret(new Expression(lambda()));
+            consume(SEMICOLON, "Expect ';' after lone lambda expression statement.");
+            return ret;
+        }
         if(match({VAR})) return varDeclaration();
         return statement();
     } catch(const ParseError& err) {
@@ -194,6 +199,7 @@ stmt_ptr Parser::expressionStatement() {
 }
 
 stmt_ptr Parser::function(std::string kind) {
+
     Token name = consume(IDENTIFIER, "Expect " + kind + " name.");
 
     consume(LEFT_PAREN, "Expect '(' after " + kind + " name.");
@@ -429,7 +435,8 @@ expr_ptr Parser::finishCall(expr_ptr& callee) {
 }
 
 expr_ptr Parser::call() {
-    expr_ptr expr = primary();
+    // expr_ptr expr = primary();
+    expr_ptr expr = lambda();
 
     while (true) { 
       if (match({LEFT_PAREN})) {
@@ -440,6 +447,33 @@ expr_ptr Parser::call() {
     }
 
     return expr;
+}
+
+expr_ptr Parser::lambda() {
+
+    //this is kind of iffy since it's possible to be called via the call() handler
+    //and the declaration() handler, I'm sure it's buggy but since it's only a challenge, eh.
+    if(!match({FUN}) && previous().type != FUN) {
+        return primary();
+    }
+
+    consume(LEFT_PAREN, "Expect parameter list in lambda function declaration.");
+    std::vector<Token> parameters;
+    if (!check(RIGHT_PAREN)) {
+      do {
+        if (parameters.size() >= 255) {
+          error(peek(), "Can't have more than 255 parameters.");
+        }
+        parameters.push_back(consume(IDENTIFIER, "Expect parameter name."));
+      } while (match({COMMA}));
+    }
+
+    consume(RIGHT_PAREN, "Expect ')' after parameters.");
+
+    consume(LEFT_BRACE, "Expect '{' before lambda body.");
+    std::vector<stmt_ptr> body = block();
+
+    return expr_ptr(new Lambda(parameters, std::move(body)));
 }
 
 expr_ptr Parser::primary() {

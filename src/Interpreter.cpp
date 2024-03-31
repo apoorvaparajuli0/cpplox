@@ -8,6 +8,7 @@
 #include "../headers/Expr.hpp"
 #include "../headers/Stmt.hpp"
 #include "../headers/LoxFunction.hpp"
+#include "../headers/LoxLambda.hpp"
 
 Interpreter::Interpreter() {
     globals.get()->define("clock", call_ptr(new Clock()));
@@ -151,7 +152,6 @@ void Interpreter::executeBlock(const std::vector<stmt_ptr>& statements, const en
 
 void Interpreter::visitBlockStmt(const Block& stmt) {
     executeBlock(std::move(stmt.statements), env_ptr(new Environment(environment)));
-
     return;
 }
 void Interpreter::visitExpressionStmt(const Expression& stmt)
@@ -288,7 +288,7 @@ Object Interpreter::visitBinaryExpr(const Binary& expr) {
 Object Interpreter::visitCallExpr(const Call& expr) {
     Object callee = evaluate(expr.callee);
 
-    std::vector<Object> arguments; //std::any is Object for the most part
+    std::vector<Object> arguments; 
     for (const expr_ptr& argument : expr.arguments) { 
       arguments.push_back(evaluate(argument));
     }
@@ -304,6 +304,11 @@ Object Interpreter::visitCallExpr(const Call& expr) {
     }
 
     return function.get()->call(*this, arguments);
+}
+
+Object Interpreter::visitLambdaExpr(const Lambda& expr) {
+    call_ptr function(new LoxLambda(expr, environment));
+    return function;
 }
 
 

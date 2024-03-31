@@ -7,6 +7,7 @@ int main(int argc, char** argv) {
     }
 
     std::list<std::string> exprTypes = {
+      "Lambda   : std::vector<Token> params, std::vector<stmt_ptr> body",
       "Assign   : Token name, expr_ptr value",
       "Binary   : expr_ptr left, Token operator_, expr_ptr right",
       "Call     : expr_ptr callee, Token paren, std::vector<expr_ptr> arguments", 
@@ -73,6 +74,7 @@ void defineHeader(std::string outputDir, std::string exprName, std::string stmtN
     out << "#include \"memory\"\n";
     out << "#include \"../headers/Token.hpp\"\n\n";
 
+    out << "//Expression Types\n";
     for(std::string type : exprTypes) {
         std::string className = trim(split(type, ": ").front());
         out << "class " + className + ";\n";
@@ -80,6 +82,7 @@ void defineHeader(std::string outputDir, std::string exprName, std::string stmtN
 
     out << "\n\n";
 
+    out << "//Statement Types\n";
     for(std::string type : stmtTypes) {
         std::string className = trim(split(type, ": ").front());
         out << "class " + className + ";\n";
