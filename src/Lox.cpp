@@ -12,11 +12,11 @@ bool Lox::hadRuntimeError = false;
 Interpreter Lox::interpreter = Interpreter();
 
 void Lox::runFile(std::string path) {
-    std::ifstream fileBuffer(path, std::ios::in | std::ios::binary);
+    std::ifstream fileBuffer(path, std::ios::in);
     std::vector<char> bytes;
     if(fileBuffer.good()) {
         char curr = '\0';
-        while(fileBuffer >> curr) {
+        while(fileBuffer.get(curr)) {
             if(curr != '\0') {
                 bytes.push_back(curr);
             }

@@ -32,6 +32,7 @@ class Interpreter : ExprVisitor<Object>, StmtVisitor<void> {
         void visitFunctionStmt(const Function& stmt) override;
         void visitIfStmt(const If& stmt) override;
         void visitPrintStmt(const Print& stmt) override;
+        void visitReturnStmt(const Return& stmt) override;
         void visitVarStmt(const Var& stmt) override;
         void visitWhileStmt(const While& stmt) override;
         void visitBlockStmt(const Block& stmt) override;

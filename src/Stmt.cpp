@@ -30,6 +30,12 @@ void Print::accept(StmtVisitor<void>& visitor) const {
   return visitor.visitPrintStmt(*this);
 }
 
+Return::Return(Token keyword, expr_ptr value) : 
+keyword{std::move(keyword)}, value{std::move(value)} {}
+void Return::accept(StmtVisitor<void>& visitor) const {
+  return visitor.visitReturnStmt(*this);
+}
+
 Var::Var(Token name, expr_ptr initializer) : 
 name{std::move(name)}, initializer{std::move(initializer)} {}
 void Var::accept(StmtVisitor<void>& visitor) const {

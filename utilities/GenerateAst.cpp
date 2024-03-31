@@ -26,6 +26,7 @@ int main(int argc, char** argv) {
       "Function   : Token name, std::vector<Token> params, std::vector<stmt_ptr> body",
       "If         : expr_ptr condition, stmt_ptr thenBranch, stmt_ptr elseBranch",
       "Print      : expr_ptr expression",
+      "Return     : Token keyword, expr_ptr value",
       "Var        : Token name, expr_ptr initializer",
       "While      : expr_ptr condition, stmt_ptr body"
     };
@@ -105,8 +106,8 @@ void defineHeader(std::string outputDir, std::string exprName, std::string stmtN
 
     out << "};\n\n";
 
-    out << "using expr_ptr = std::unique_ptr<Expr>;\n";
-    out << "using stmt_ptr = std::unique_ptr<Stmt>;\n\n";
+    out << "using expr_ptr = std::shared_ptr<Expr>;\n";
+    out << "using stmt_ptr = std::shared_ptr<Stmt>;\n\n";
 
     out << "#endif\n";
 

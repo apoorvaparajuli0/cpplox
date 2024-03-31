@@ -43,6 +43,14 @@ class Print : public Stmt {
   Print(expr_ptr expression);
   void accept(StmtVisitor<void>& visitor) const override;
 };
+class Return : public Stmt {
+  public:
+    Token keyword;
+    expr_ptr value;
+
+  Return(Token keyword, expr_ptr value);
+  void accept(StmtVisitor<void>& visitor) const override;
+};
 class Var : public Stmt {
   public:
     Token name;

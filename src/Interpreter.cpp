@@ -3,6 +3,7 @@
 
 #include "../headers/Interpreter.hpp"
 #include "../headers/RuntimeError.hpp"
+#include "../headers/ReturnError.hpp"
 #include "../headers/Lox.hpp"
 #include "../headers/Expr.hpp"
 #include "../headers/Stmt.hpp"
@@ -17,7 +18,7 @@ void Interpreter::interpret(std::vector<stmt_ptr> statements) {
         for(const stmt_ptr& statement : statements) {
             execute(statement);
         }
-    } catch(RuntimeError& err) {
+    } catch(const RuntimeError& err) {
         Lox::runtimeError(err);
     }
 }
@@ -137,7 +138,13 @@ void Interpreter::executeBlock(const std::vector<stmt_ptr>& statements, const en
             execute(statement);
         }
 
-    } catch(...) {}
+    } catch(const ReturnError& err) {
+        this->environment = previous;
+        throw err;
+    } catch(const RuntimeError& err) {
+        this->environment = previous;
+        throw err;
+    }
 
     this->environment = previous;
 }
@@ -154,7 +161,7 @@ void Interpreter::visitExpressionStmt(const Expression& stmt)
 }
 
 void Interpreter::visitFunctionStmt(const Function& stmt) {
-    call_ptr function(new LoxFunction(stmt));
+    call_ptr function(new LoxFunction(stmt, environment));
     environment.get()->define(stmt.name.lexeme, function);
 
     return;
@@ -181,6 +188,14 @@ void Interpreter::visitPrintStmt(const Print& stmt) {
     printf("%s\n", stringify(value).c_str());
 
     return;
+}
+
+void Interpreter::visitReturnStmt(const Return& stmt) {
+    Object value = std::nullptr_t{};
+
+    if(stmt.value != std::nullptr_t{}) value = evaluate(stmt.value);
+    
+    throw ReturnError(value);
 }
 
 void Interpreter::visitVarStmt(const Var& stmt) {

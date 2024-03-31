@@ -20,6 +20,7 @@ class Expression;
 class Function;
 class If;
 class Print;
+class Return;
 class Var;
 class While;
 
@@ -46,6 +47,7 @@ class StmtVisitor {
     virtual R visitFunctionStmt(const Function& stmt) = 0;
     virtual R visitIfStmt(const If& stmt) = 0;
     virtual R visitPrintStmt(const Print& stmt) = 0;
+    virtual R visitReturnStmt(const Return& stmt) = 0;
     virtual R visitVarStmt(const Var& stmt) = 0;
     virtual R visitWhileStmt(const While& stmt) = 0;
     virtual ~StmtVisitor() = default;

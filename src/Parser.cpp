@@ -24,7 +24,7 @@ stmt_ptr Parser::declaration() {
         if(match({FUN})) return function("function");
         if(match({VAR})) return varDeclaration();
         return statement();
-    } catch(ParseError& err) {
+    } catch(const ParseError& err) {
         synchronize();
         return std::nullptr_t{};
     }
@@ -36,6 +36,7 @@ stmt_ptr Parser::statement() {
     if(match({FOR})) return forStatement();
     if(match({IF})) return ifStatement();
     if(match({PRINT})) return printStatement();
+    if(match({RETURN})) return returnStatement();
     if(match({WHILE})) return whileStatement();
     if(match({LEFT_BRACE})) return stmt_ptr(new Block(block()));
 
@@ -140,6 +141,19 @@ stmt_ptr Parser::printStatement() {
     consume(SEMICOLON, "Expect ';' after value");
 
     return stmt_ptr(new Print(std::move(value)));
+}
+
+stmt_ptr Parser::returnStatement() {
+    Token keyword = previous();
+    expr_ptr value = std::nullptr_t{};
+
+    if(!check(SEMICOLON)) {
+        value = expression();
+    }
+
+    consume(SEMICOLON, "Expect ';' after 'return' keyword");
+    
+    return stmt_ptr(new Return(keyword, std::move(value)));
 }
 
 stmt_ptr Parser::varDeclaration() {
@@ -270,7 +284,7 @@ expr_ptr Parser::log_and() {
 //     if(match({QUESTION})) {
 //         try {
 //             expr_ptr right_err = branch();
-//         } catch(ParseError& err) {
+//         } catch(const ParseError& err) {
 //             throw error(peek(), "An Expression Must Precede the '?' Operator");
 //         }
 //     }
@@ -284,7 +298,7 @@ expr_ptr Parser::log_and() {
 //     if(match({COLON})) {
 //         try {
 //             expr_ptr right_err = comma();
-//         } catch(ParseError& err) {
+//         } catch(const ParseError& err) {
 //             throw error(peek(), "An Expression Must Precede the ':' Operator");
 //         }
 //     }
@@ -298,7 +312,7 @@ expr_ptr Parser::log_and() {
 //     if(match({COMMA})) {
 //         try {
 //             expr_ptr right_err = equality();
-//         } catch(ParseError& err) {
+//         } catch(const ParseError& err) {
 //             throw error(peek(), "An Expression Must Precede the ',' Operator");
 //         }
 //     }
@@ -317,7 +331,7 @@ expr_ptr Parser::equality() {
     // if(match({BANG_EQUAL, EQUAL_EQUAL})) {
     //     try {
     //         expr_ptr right_err = comparison();
-    //     } catch(ParseError& err) {
+    //     } catch(const ParseError& err) {
     //         throw error(peek(), "An Expression Must Precede an Equality Operator");
     //     }
     // }
@@ -336,7 +350,7 @@ expr_ptr Parser::comparison() {
     // if(match({GREATER, GREATER_EQUAL, LESS, LESS_EQUAL})) {
     //     try {
     //         expr_ptr right_err = term();
-    //     } catch(ParseError& err) {
+    //     } catch(const ParseError& err) {
     //         throw error(peek(), "An Expression Must Precede a Comparison Operator");
     //     }
     // }
@@ -361,7 +375,7 @@ expr_ptr Parser::term() {
     // if(match({PLUS})) {
     //     try {
     //         expr_ptr right_err = factor();
-    //     } catch(ParseError& err) {
+    //     } catch(const ParseError& err) {
     //         throw error(peek(), "'+' Is Missing A Left Hand Operand");
     //     }
     // }
@@ -378,7 +392,7 @@ expr_ptr Parser::factor() {
     // if(match({SLASH, STAR})) {
     //     try {
     //         expr_ptr right_err = unary();
-    //     } catch(ParseError& err) {
+    //     } catch(const ParseError& err) {
     //         throw error(peek(), "An Expression Must Precede the Multiplication/Division Operators");
     //     }
     // }
