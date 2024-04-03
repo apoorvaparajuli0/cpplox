@@ -4,14 +4,6 @@
 #include "../headers/Visitor.hpp"
 #include "vector"
 
-class Lambda : public Expr {
-  public:
-    std::vector<Token> params;
-    std::vector<stmt_ptr> body;
-
-  Lambda(std::vector<Token> params, std::vector<stmt_ptr> body);
-  Object accept(ExprVisitor<Object>& visitor) const override;
-};
 class Assign : public Expr {
   public:
     Token name;

@@ -11,6 +11,7 @@ add_library(src
             Parser.cpp      "../headers/Parser.hpp"
             Interpreter.cpp "../headers/Interpreter.hpp"
             Environment.cpp "../headers/Environment.hpp"
+            Resolver.cpp    "../headers/Resolver.hpp"
 
             "../headers/LoxLambda.hpp"
             "../headers/LoxFunction.hpp"  "../headers/ReturnError.hpp"

@@ -7,7 +7,8 @@ int main(int argc, char** argv) {
     }
 
     std::list<std::string> exprTypes = {
-      "Lambda   : std::vector<Token> params, std::vector<stmt_ptr> body",
+    //CHALLENGE 10.2: Add Support for Lambda Expressions
+    //   "Lambda   : std::vector<Token> params, std::vector<stmt_ptr> body",
       "Assign   : Token name, expr_ptr value",
       "Binary   : expr_ptr left, Token operator_, expr_ptr right",
       "Call     : expr_ptr callee, Token paren, std::vector<expr_ptr> arguments", 

@@ -10,15 +10,20 @@
 class Interpreter : ExprVisitor<Object>, StmtVisitor<void> {
 
     public:
+        std::unordered_map<const Expr*, int> locals;
         env_ptr globals = env_ptr(new Environment());
         env_ptr environment = globals;
 
         Interpreter();
-        void interpret(std::vector<stmt_ptr> statements);
+        void interpret(std::vector<stmt_ptr>& statements);
+        void resolve(const Expr& expr, int depth);
 
         Object visitBinaryExpr(const Binary& expr) override;
         Object visitCallExpr(const Call& expr) override;
-        Object visitLambdaExpr(const Lambda& expr) override;
+
+        //CHALLENGE 10.2: Add Support for Lambda Expressions
+        // Object visitLambdaExpr(const Lambda& expr) override;
+        
         Object visitGroupingExpr(const Grouping& expr) override;
         Object visitLiteralExpr(const Literal& expr) override;
         Object visitLogicalExpr(const Logical& expr) override;
@@ -63,11 +68,13 @@ class Interpreter : ExprVisitor<Object>, StmtVisitor<void> {
         Object evaluate(const expr_ptr& expr);
         void execute(const stmt_ptr& stmt);
 
-        bool isTruthy(Object object);
-        bool isEqual(Object a, Object b);
-        std::string stringify(Object object);
-        void checkNumberOperand(Token op, Object operand);
-        void checkNumberOperands(Token op, Object left, Object right);
+        Object lookupVariable(Token name, const Expr* expr);
+        void lookupAssignment(Token name, const Expr* expr, const Object& value);
+        bool isTruthy(const Object& object);
+        bool isEqual(const Object& a, const Object& b);
+        std::string stringify(const Object& object);
+        void checkNumberOperand(Token op, const Object& operand);
+        void checkNumberOperands(Token op, const Object& left, const Object& right);
 };
 
 #endif

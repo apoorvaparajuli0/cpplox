@@ -6,6 +6,7 @@
 #include "../headers/Interpreter.hpp"
 #include "../headers/Scanner.hpp"
 #include "../headers/Parser.hpp"
+#include "../headers/Resolver.hpp"
 
 bool Lox::hadError = false;
 bool Lox::hadRuntimeError = false;
@@ -50,8 +51,13 @@ void Lox::run(std::string src) {
     std::vector<stmt_ptr> statements = parser.parse();
 
     if(hadError) return;
+
+    Resolver resolver = Resolver(interpreter);
+    resolver.resolve(statements);
+
+    if(hadError) return;
     
-    interpreter.interpret(std::move(statements));
+    interpreter.interpret(statements);
 }
 
 void Lox::error(int line, std::string message) {

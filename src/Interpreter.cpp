@@ -1,5 +1,6 @@
 #include "memory"
 #include "utility"
+#include "ranges"
 
 #include "../headers/Interpreter.hpp"
 #include "../headers/RuntimeError.hpp"
@@ -11,10 +12,11 @@
 #include "../headers/LoxLambda.hpp"
 
 Interpreter::Interpreter() {
-    globals.get()->define("clock", call_ptr(new Clock()));
+    Object value = call_ptr(new Clock());
+    globals.get()->define("clock", value);
 }
 
-void Interpreter::interpret(std::vector<stmt_ptr> statements) {
+void Interpreter::interpret(std::vector<stmt_ptr>& statements) {
     try {
         for(const stmt_ptr& statement : statements) {
             execute(statement);
@@ -59,31 +61,45 @@ Object Interpreter::visitUnaryExpr(const Unary& expr) {
 }
 
 Object Interpreter::visitVariableExpr(const Variable& expr) {
-    return environment.get()->get(expr.name);
+    return lookupVariable(expr.name, &expr);
 }
 
-void Interpreter::checkNumberOperand(Token op, Object operand) {
+Object Interpreter::lookupVariable(Token name, const Expr* expr) {
+    int distance = -1;
+    
+    if(locals.contains(expr)) {
+        distance = locals.at(expr);
+    }
+
+    if(distance != -1) {
+        return environment.get()->getAt(distance, name.lexeme);
+    } else {
+        return globals.get()->get(name);
+    }
+}
+
+void Interpreter::checkNumberOperand(Token op, const Object& operand) {
     if(std::holds_alternative<double>(operand)) return;
     throw RuntimeError(op, "Operand Must be a Number");
 }
 
-void Interpreter::checkNumberOperands(Token op, Object left, Object right) {
+void Interpreter::checkNumberOperands(Token op, const Object& left, const Object& right) {
     if(std::holds_alternative<double>(left) && std::holds_alternative<double>(right)) return;
     throw RuntimeError(op, "Operands Must be Numbers");
 }
 
-bool Interpreter::isTruthy(Object object) {
+bool Interpreter::isTruthy(const Object& object) {
     if(std::holds_alternative<std::nullptr_t>(object)) return false;
     if(std::holds_alternative<bool>(object)) return std::any_cast<bool>(std::visit(Token::ValueResolver{}, object));
     return true;
 }
 
-bool Interpreter::isEqual(Object a, Object b) {
+bool Interpreter::isEqual(const Object& a, const Object& b) {
     if((std::holds_alternative<std::nullptr_t>(a) && std::holds_alternative<std::nullptr_t>(b))) return true;
     if((std::holds_alternative<std::nullptr_t>(a))) return false;
     if(std::visit(Token::TypeResolver{}, a) != std::visit(Token::TypeResolver{}, b)) return false;
 
-    auto equality = [](Object& op1, Object& op2) -> bool {
+    auto equality = [](const Object& op1, const Object& op2) -> bool {
         if(const double* ptr = std::get_if<double>(&op1)) {
             return *ptr == *(std::get_if<double>(&op2));
         } else if(const bool* ptr = std::get_if<bool>(&op1)) {
@@ -98,7 +114,7 @@ bool Interpreter::isEqual(Object a, Object b) {
     return equality(a, b);
 }
 
-std::string Interpreter::stringify(Object object) {
+std::string Interpreter::stringify(const Object& object) {
     if(std::holds_alternative<std::nullptr_t>(object)) return "nil";
     if(std::holds_alternative<double>(object)) {
         std::stringstream oss;
@@ -128,6 +144,10 @@ void Interpreter::execute(const stmt_ptr& stmt) {
     // } else {
         stmt.get()->accept(*this);
     // }
+}
+
+void Interpreter::resolve(const Expr& expr, int depth) {
+    locals.try_emplace(&expr, depth);
 }
 
 void Interpreter::executeBlock(const std::vector<stmt_ptr>& statements, const env_ptr& environment) {
@@ -204,7 +224,9 @@ void Interpreter::visitVarStmt(const Var& stmt) {
         value = evaluate(stmt.initializer);
     }
 
+    //THIS IS WHERE THE ERROR IS
     environment.get()->define(stmt.name.lexeme, value);
+
     return;
 }
 
@@ -224,9 +246,23 @@ void Interpreter::visitWhileStmt(const While& stmt) {
     return;
 }
 
+void Interpreter::lookupAssignment(Token name, const Expr* expr, const Object& value) {
+    int distance = -1;
+    
+    if(locals.contains(expr)) {
+        distance = locals.at(expr);
+    }
+    
+    if(distance != -1) {
+        environment.get()->assignAt(distance, name, value);
+    } else {
+        globals.get()->assign(name, value);
+    }
+}
+
 Object Interpreter::visitAssignExpr(const Assign& expr) {
     Object value = evaluate(expr.value);
-    environment.get()->assign(expr.name, value);
+    lookupAssignment(expr.name, &expr, value);
 
     return value;
 }
@@ -306,9 +342,8 @@ Object Interpreter::visitCallExpr(const Call& expr) {
     return function.get()->call(*this, arguments);
 }
 
-Object Interpreter::visitLambdaExpr(const Lambda& expr) {
-    call_ptr function(new LoxLambda(expr, environment));
-    return function;
-}
-
-
+//CHALLENGE 10.2: Add Support for Lambda Expressions
+// Object Interpreter::visitLambdaExpr(const Lambda& expr) {
+//     call_ptr function(new LoxLambda(expr, environment));
+//     return function;
+// }

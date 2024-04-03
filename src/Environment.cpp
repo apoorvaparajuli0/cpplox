@@ -1,8 +1,28 @@
 #include "../headers/Environment.hpp"
 #include "../headers/RuntimeError.hpp"
 
-void Environment::define(std::string name, Object value) {
+#include "utility"
+#include "ranges"
+
+void Environment::define(std::string name, const Object& value) {
     values[name] = value;
+}
+
+env_ptr Environment::ancestor(int distance) {
+    env_ptr environment(this);
+    for(int i = 0; i < distance; i++) {
+        environment = environment.get()->enclosing;
+    }
+
+    return environment;
+}
+
+Object Environment::getAt(int distance, std::string name) {
+    return ancestor(distance).get()->values.at(name);
+}
+
+void Environment::assignAt(int distance, Token name, const Object& value) {
+    ancestor(distance).get()->values[name.lexeme] = value;
 }
 
 Object Environment::get(Token name) {
@@ -16,7 +36,7 @@ Object Environment::get(Token name) {
     throw RuntimeError(name, "Undefined Variable '" + name.lexeme + "'.");
 }
 
-void Environment::assign(Token name, Object value) {
+void Environment::assign(Token name, const Object& value) {
     if(values.contains(name.lexeme)) {
         values[name.lexeme] = value;
         return;

@@ -41,7 +41,6 @@ class LoxFunction : public LoxCallable {
             } catch(const ReturnError& err) {
                 return err.value;
             }
-
             return std::nullptr_t{};
         }
 };
