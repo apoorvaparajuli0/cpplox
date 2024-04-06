@@ -51,7 +51,7 @@ class Interpreter : ExprVisitor<Object>, StmtVisitor<void> {
                     return 0;
                 }
 
-                Object call(Interpreter& interpreter, std::vector<Object> arguments) override {  
+                Object call(Interpreter& interpreter, std::vector<Object>& arguments) override {  
                     return std::chrono::duration<double>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch())).count();
                 }
 

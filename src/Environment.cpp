@@ -9,20 +9,20 @@ void Environment::define(std::string name, const Object& value) {
 }
 
 env_ptr Environment::ancestor(int distance) {
-    env_ptr environment(this);
+    env_ptr environment(new Environment(*this));
     for(int i = 0; i < distance; i++) {
-        environment = environment.get()->enclosing;
+        environment = environment->enclosing;
     }
 
     return environment;
 }
 
 Object Environment::getAt(int distance, std::string name) {
-    return ancestor(distance).get()->values.at(name);
+    return ancestor(distance)->values.at(name);
 }
 
 void Environment::assignAt(int distance, Token name, const Object& value) {
-    ancestor(distance).get()->values[name.lexeme] = value;
+    ancestor(distance)->values[name.lexeme] = value;
 }
 
 Object Environment::get(Token name) {
@@ -31,7 +31,7 @@ Object Environment::get(Token name) {
         return values.at(name.lexeme);
     }
 
-    if(enclosing != std::nullptr_t{}) return enclosing.get()->get(name);
+    if(enclosing != std::nullptr_t{}) return enclosing->get(name);
 
     throw RuntimeError(name, "Undefined Variable '" + name.lexeme + "'.");
 }
@@ -42,7 +42,7 @@ void Environment::assign(Token name, const Object& value) {
         return;
     }
 
-    if(enclosing != std::nullptr_t{}) enclosing.get()->assign(name, value); return;
+    if(enclosing != std::nullptr_t{}) enclosing->assign(name, value); return;
 
     throw RuntimeError(name, "Undefined Variable '" + name.lexeme + "'.");
 }

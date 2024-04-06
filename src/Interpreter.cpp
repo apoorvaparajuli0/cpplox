@@ -13,7 +13,7 @@
 
 Interpreter::Interpreter() {
     Object value = call_ptr(new Clock());
-    globals.get()->define("clock", value);
+    globals->define("clock", value);
 }
 
 void Interpreter::interpret(std::vector<stmt_ptr>& statements) {
@@ -72,9 +72,9 @@ Object Interpreter::lookupVariable(Token name, const Expr* expr) {
     }
 
     if(distance != -1) {
-        return environment.get()->getAt(distance, name.lexeme);
+        return environment->getAt(distance, name.lexeme);
     } else {
-        return globals.get()->get(name);
+        return globals->get(name);
     }
 }
 
@@ -133,7 +133,7 @@ std::string Interpreter::stringify(const Object& object) {
 }
 
 Object Interpreter::evaluate(const expr_ptr& expr) {
-    return expr.get()->accept(*this);
+    return expr->accept(*this);
 }
 
 void Interpreter::execute(const stmt_ptr& stmt) {
@@ -142,7 +142,7 @@ void Interpreter::execute(const stmt_ptr& stmt) {
     //     Object result = evaluate(dynamic_cast<Expression*>(stmt.get())->expression);
     //     printf("%s\n", std::visit(Token::Resolver{}, result).c_str());
     // } else {
-        stmt.get()->accept(*this);
+        stmt->accept(*this);
     // }
 }
 
@@ -150,6 +150,7 @@ void Interpreter::resolve(const Expr& expr, int depth) {
     locals.try_emplace(&expr, depth);
 }
 
+//the issue is related to usage of variables
 void Interpreter::executeBlock(const std::vector<stmt_ptr>& statements, const env_ptr& environment) {
     env_ptr previous = this->environment;
     try {
@@ -181,8 +182,8 @@ void Interpreter::visitExpressionStmt(const Expression& stmt)
 }
 
 void Interpreter::visitFunctionStmt(const Function& stmt) {
-    call_ptr function(new LoxFunction(stmt, environment));
-    environment.get()->define(stmt.name.lexeme, function);
+    call_ptr function(new LoxFunction(&stmt, environment));
+    environment->define(stmt.name.lexeme, function);
 
     return;
 }
@@ -225,7 +226,7 @@ void Interpreter::visitVarStmt(const Var& stmt) {
     }
 
     //THIS IS WHERE THE ERROR IS
-    environment.get()->define(stmt.name.lexeme, value);
+    environment->define(stmt.name.lexeme, value);
 
     return;
 }
@@ -254,9 +255,9 @@ void Interpreter::lookupAssignment(Token name, const Expr* expr, const Object& v
     }
     
     if(distance != -1) {
-        environment.get()->assignAt(distance, name, value);
+        environment->assignAt(distance, name, value);
     } else {
-        globals.get()->assign(name, value);
+        globals->assign(name, value);
     }
 }
 
@@ -335,11 +336,11 @@ Object Interpreter::visitCallExpr(const Call& expr) {
 
     call_ptr function = std::any_cast<call_ptr>(std::visit(Token::ValueResolver{}, callee));
 
-    if(arguments.size() != function.get()->arity()) {
-        throw RuntimeError(expr.paren, "Expected " + stringify((double)function.get()->arity()) + " arguments but got " + stringify((double)arguments.size()) + ".");
+    if(arguments.size() != function->arity()) {
+        throw RuntimeError(expr.paren, "Expected " + stringify((double)function->arity()) + " arguments but got " + stringify((double)arguments.size()) + ".");
     }
 
-    return function.get()->call(*this, arguments);
+    return function->call(*this, arguments);
 }
 
 //CHALLENGE 10.2: Add Support for Lambda Expressions

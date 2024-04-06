@@ -132,11 +132,11 @@ Object Resolver::visitVariableExpr(const Variable& expr) {
 }
 
 void Resolver::resolve(const stmt_ptr& stmt) {
-    stmt.get()->accept(*this);
+    stmt->accept(*this);
 }
 
 void Resolver::resolve(const expr_ptr& expr) {
-    expr.get()->accept(*this);
+    expr->accept(*this);
 }
 
 void Resolver::resolveFunction(const Function* stmt, FunctionType type) {
