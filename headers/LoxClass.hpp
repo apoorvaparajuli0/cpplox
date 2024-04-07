@@ -4,7 +4,7 @@
 #include "unordered_map"
 #include "string"
 
-#include "LoxCallable.hpp"
+#include "LoxFunction.hpp"
 
 class LoxInstance {
     private:
@@ -21,43 +21,17 @@ class LoxInstance {
 class LoxClass : public LoxCallable {
     public:
         std::string name;
+        std::unordered_map<std::string, call_ptr> methods;
 
-        LoxClass(std::string name) : name(name) {}
+        LoxClass(std::string name, std::unordered_map<std::string, call_ptr> methods) : 
+        name(name), methods(methods) 
+        {}
 
-        std::string toString() override {
-            return name;
-        }
-
-        Object call(Interpreter& interpreter, std::vector<Object>& arguments) override {
-            std::shared_ptr<LoxInstance> instance(new LoxInstance(*this));
-            return instance;
-        }
-
-        int arity() override {
-            return 0;
-        }
-
+        call_ptr findMethod(std::string name);
+        std::string toString() override;
+        Object call(Interpreter& interpreter, std::vector<Object>& arguments) override;
+        int arity() override;
 };
-
-LoxInstance::LoxInstance(LoxClass& klass) {
-    this->klass = std::shared_ptr<LoxClass>(new LoxClass(klass));
-}
-
-std::string LoxInstance::toString() {
-    return klass->name + " instance";
-}
-
-Object LoxInstance::get(Token name) {
-    if (fields.contains(name.lexeme)) {
-      return fields.at(name.lexeme);
-    }
-
-    throw RuntimeError(name, "Undefined property '" + name.lexeme + "'.");
-}
-
-void LoxInstance::set(Token name, Object value) {
-    fields[name.lexeme] = value;
-}
 
 using class_ptr = std::shared_ptr<LoxClass>;
 

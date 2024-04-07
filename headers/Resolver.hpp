@@ -16,14 +16,22 @@ class Resolver : ExprVisitor<Object>, StmtVisitor<void> {
     };
 
     private:
-        enum FunctionType {
+        enum class FunctionType {
             NONE,
-            FUNCTION
+            FUNCTION,
+            INITIALIZER,
+            METHOD
+        };
+
+        enum class ClassType {
+            NONE,
+            CLASS
         };
 
         Interpreter& interpreter;
         ResolverStack scopes;
         FunctionType currentFunction = FunctionType::NONE;
+        ClassType currentClass = ClassType::NONE;
 
         void resolve(const stmt_ptr& stmt);
         void resolve(const expr_ptr& expr);

@@ -512,6 +512,8 @@ expr_ptr Parser::primary() {
         return expr_ptr(new Literal(previous().literal));
     }
 
+    if(match({THIS})) return expr_ptr(new This(previous()));
+
     if(match({IDENTIFIER})) {
         return expr_ptr(new Variable(previous()));
     }

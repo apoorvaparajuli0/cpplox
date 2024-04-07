@@ -3,14 +3,12 @@
 #include "ranges"
 
 #include "../headers/Interpreter.hpp"
-#include "../headers/RuntimeError.hpp"
 #include "../headers/ReturnError.hpp"
 #include "../headers/Lox.hpp"
 #include "../headers/Expr.hpp"
-#include "../headers/Stmt.hpp"
-#include "../headers/LoxFunction.hpp"
-#include "../headers/LoxLambda.hpp"
 #include "../headers/LoxClass.hpp"
+#include "../headers/Stmt.hpp"
+// #include "../headers/LoxLambda.hpp"
 
 Interpreter::Interpreter() {
     Object value = call_ptr(new Clock());
@@ -58,6 +56,10 @@ Object Interpreter::visitSetExpr(const Set& expr) {
     dynamic_cast<LoxInstance*>(std::any_cast<instance_ptr>(std::visit(Token::ValueResolver{}, object)).get())->set(expr.name, value);
     
     return value;
+}
+
+Object Interpreter::visitThisExpr(const This& expr) {
+    return lookupVariable(expr.keyword, &expr);
 }
 
 Object Interpreter::visitUnaryExpr(const Unary& expr) {
@@ -191,7 +193,16 @@ void Interpreter::visitBlockStmt(const Block& stmt) {
 
 void Interpreter::visitClassStmt(const Class& stmt) {
     environment->define(stmt.name.lexeme, std::nullptr_t{});
-    class_ptr klass(new LoxClass(stmt.name.lexeme));
+
+    std::unordered_map<std::string, call_ptr> methods;
+
+    for(const stmt_ptr& method : stmt.methods) {
+        Function* raw_method = dynamic_cast<Function*>(method.get());
+        call_ptr function(new LoxFunction(raw_method, environment, !(raw_method->name.lexeme.compare("init"))));
+        methods[raw_method->name.lexeme] = function;
+    }
+
+    class_ptr klass(new LoxClass(stmt.name.lexeme, methods));
     environment->assign(stmt.name, klass);
 
     return;
@@ -204,7 +215,7 @@ void Interpreter::visitExpressionStmt(const Expression& stmt)
 }
 
 void Interpreter::visitFunctionStmt(const Function& stmt) {
-    call_ptr function(new LoxFunction(&stmt, environment));
+    call_ptr function(new LoxFunction(&stmt, environment, false));
     environment->define(stmt.name.lexeme, function);
 
     return;

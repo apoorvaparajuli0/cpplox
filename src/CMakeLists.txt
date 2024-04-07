@@ -12,9 +12,10 @@ add_library(src
             Interpreter.cpp "../headers/Interpreter.hpp"
             Environment.cpp "../headers/Environment.hpp"
             Resolver.cpp    "../headers/Resolver.hpp"
+            LoxFunction.cpp "../headers/LoxFunction.hpp"
+            LoxClass.cpp    "../headers/LoxClass.hpp"
 
-            "../headers/LoxLambda.hpp"    "../headers/LoxClass.hpp"
-            "../headers/LoxFunction.hpp"  "../headers/ReturnError.hpp"
-            "../headers/RuntimeError.hpp" "../headers/LoxCallable.hpp"
+            "../headers/LoxLambda.hpp"    "../headers/ReturnError.hpp"  
+            "../headers/RuntimeError.hpp" "../headers/LoxCallable.hpp"  
             "../headers/TokenType.hpp"    "../headers/Visitor.hpp"
             )
