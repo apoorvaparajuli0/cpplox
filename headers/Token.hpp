@@ -10,8 +10,6 @@
 #include "TokenType.hpp"
 #include "LoxCallable.hpp"
 
-using Object = std::variant<std::nullptr_t, std::string, double, bool, call_ptr>;
-
 class Token {
     public:
         TokenType type;
@@ -46,6 +44,7 @@ class Token {
         std::string operator()(double var_literal) const { return VariantResolver(var_literal); }
         std::string operator()(std::string var_literal) const { return VariantResolver(var_literal); }
         std::string operator()(call_ptr var_literal) const { return VariantResolver(var_literal); }
+        std::string operator()(instance_ptr var_literal) const { return VariantResolver(var_literal); }
     };
 
     template<typename T>
@@ -63,6 +62,7 @@ class Token {
         std::any operator()(double var_literal) const { return ResolveValue(var_literal); }
         std::any operator()(std::string var_literal) const { return ResolveValue(var_literal); }
         std::any operator()(call_ptr var_literal) const { return ResolveValue(var_literal); }
+        std::any operator()(instance_ptr var_literal) const { return ResolveValue(var_literal); }
     };
 
     template<typename T>
@@ -79,6 +79,7 @@ class Token {
         const std::type_info& operator()(double var_literal) const { return ResolveType(var_literal); }
         const std::type_info& operator()(std::string var_literal) const { return ResolveType(var_literal); }
         const std::type_info& operator()(call_ptr var_literal) const { return ResolveType(var_literal); }
+        const std::type_info& operator()(instance_ptr var_literal) const { return ResolveType(var_literal); }
     };
 };
 

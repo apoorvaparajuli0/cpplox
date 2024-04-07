@@ -39,6 +39,7 @@ class Parser {
         // stmt_ptr breakStatement();
         
         stmt_ptr declaration();
+        stmt_ptr classDeclaration();
         stmt_ptr statement();
         stmt_ptr forStatement();
         stmt_ptr ifStatement();

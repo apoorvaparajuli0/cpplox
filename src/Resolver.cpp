@@ -19,6 +19,13 @@ void Resolver::visitBlockStmt(const Block& stmt) {
     return;
 }
 
+void Resolver::visitClassStmt(const Class& stmt) {
+    declare(stmt.name);
+    define(stmt.name);
+
+    return;
+}
+
 void Resolver::visitExpressionStmt(const Expression& stmt) {
     resolve(stmt.expression);
     return;
@@ -98,6 +105,11 @@ Object Resolver::visitCallExpr(const Call& expr) {
     return std::nullptr_t{};
 }
 
+Object Resolver::visitGetExpr(const Get& expr) {
+    resolve(expr.object);
+    return std::nullptr_t{};
+}
+
 Object Resolver::visitGroupingExpr(const Grouping& expr) {
     resolve(expr.expression);
 
@@ -111,6 +123,13 @@ Object Resolver::visitLiteralExpr(const Literal& expr) {
 Object Resolver::visitLogicalExpr(const Logical& expr) {
     resolve(expr.left);
     resolve(expr.right);
+
+    return std::nullptr_t{};
+}
+
+Object Resolver::visitSetExpr(const Set& expr) {
+    resolve(expr.value);
+    resolve(expr.object);
 
     return std::nullptr_t{};
 }

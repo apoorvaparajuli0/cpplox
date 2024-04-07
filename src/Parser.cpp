@@ -21,6 +21,7 @@ expr_ptr Parser::expression() {
 
 stmt_ptr Parser::declaration() {
     try {
+        if(match({CLASS})) return classDeclaration();
         if(match({FUN})) return function("function");
         //CHALLENGE 10.2: Add Support for Lambda Expressions
         // {
@@ -35,6 +36,20 @@ stmt_ptr Parser::declaration() {
         synchronize();
         return std::nullptr_t{};
     }
+}
+
+stmt_ptr Parser::classDeclaration() {
+    Token name = consume(IDENTIFIER, "Expect class name.");
+    consume(LEFT_BRACE, "Expect '{' before class body.");
+
+    std::vector<stmt_ptr> methods;
+    while (!check(RIGHT_BRACE) && !isAtEnd()) {
+      methods.push_back(function("method"));
+    }
+
+    consume(RIGHT_BRACE, "Expect '}' after class body.");
+
+    return stmt_ptr(new Class(name, methods));
 }
 
 stmt_ptr Parser::statement() {
@@ -246,6 +261,9 @@ expr_ptr Parser::assignment() {
         if(dynamic_cast<Variable*>(expr.get()) != nullptr) {
             Token name = dynamic_cast<Variable*>(expr.get())->name;
             return expr_ptr(new Assign(name, std::move(value)));
+        } else if(dynamic_cast<Get*>(expr.get()) != nullptr) {
+            expr_ptr get(new Get(*(dynamic_cast<Get*>(expr.get()))));
+            return expr_ptr(new Set(dynamic_cast<Get*>(get.get())->object, dynamic_cast<Get*>(get.get())->name, value));
         }
 
         error(equals, "Invalid Assignment Target.");
@@ -445,6 +463,10 @@ expr_ptr Parser::call() {
     while (true) { 
       if (match({LEFT_PAREN})) {
         expr = finishCall(expr);
+      } else if(match({DOT})) {
+        Token name = consume(IDENTIFIER, "Expect Property Name After '.'.");
+        expr_ptr temp(new Get(expr, name));
+        expr = std::move(temp);
       } else {
         break;
       }

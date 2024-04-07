@@ -11,6 +11,14 @@ class Block : public Stmt {
   Block(std::vector<stmt_ptr> statements);
   void accept(StmtVisitor<void>& visitor) const override;
 };
+class Class : public Stmt {
+  public:
+    Token name;
+    std::vector<stmt_ptr> methods;
+
+  Class(Token name, std::vector<stmt_ptr> methods);
+  void accept(StmtVisitor<void>& visitor) const override;
+};
 class Expression : public Stmt {
   public:
     expr_ptr expression;

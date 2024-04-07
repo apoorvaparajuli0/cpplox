@@ -30,6 +30,14 @@ class Call : public Expr {
   Call(expr_ptr callee, Token paren, std::vector<expr_ptr> arguments);
   Object accept(ExprVisitor<Object>& visitor) const override;
 };
+class Get : public Expr {
+  public:
+    expr_ptr object;
+    Token name;
+
+  Get(expr_ptr object, Token name);
+  Object accept(ExprVisitor<Object>& visitor) const override;
+};
 class Grouping : public Expr {
   public:
     expr_ptr expression;
@@ -51,6 +59,22 @@ class Logical : public Expr {
     expr_ptr right;
 
   Logical(expr_ptr left, Token operator_, expr_ptr right);
+  Object accept(ExprVisitor<Object>& visitor) const override;
+};
+class Set : public Expr {
+  public:
+    expr_ptr object;
+    Token name;
+    expr_ptr value;
+
+  Set(expr_ptr object, Token name, expr_ptr value);
+  Object accept(ExprVisitor<Object>& visitor) const override;
+};
+class This : public Expr {
+  public:
+    Token keyword;
+
+  This(Token keyword);
   Object accept(ExprVisitor<Object>& visitor) const override;
 };
 class Unary : public Expr {

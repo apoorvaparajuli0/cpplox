@@ -10,6 +10,7 @@
 #include "../headers/Stmt.hpp"
 #include "../headers/LoxFunction.hpp"
 #include "../headers/LoxLambda.hpp"
+#include "../headers/LoxClass.hpp"
 
 Interpreter::Interpreter() {
     Object value = call_ptr(new Clock());
@@ -44,6 +45,19 @@ Object Interpreter::visitLogicalExpr(const Logical& expr) {
     }
 
     return evaluate(expr.right);
+}
+
+Object Interpreter::visitSetExpr(const Set& expr) {
+    Object object = evaluate(expr.object);
+
+    if (!std::holds_alternative<instance_ptr>(object)) { 
+      throw new RuntimeError(expr.name, "Only instances have fields.");
+    }
+
+    Object value = evaluate(expr.value);
+    dynamic_cast<LoxInstance*>(std::any_cast<instance_ptr>(std::visit(Token::ValueResolver{}, object)).get())->set(expr.name, value);
+    
+    return value;
 }
 
 Object Interpreter::visitUnaryExpr(const Unary& expr) {
@@ -150,7 +164,6 @@ void Interpreter::resolve(const Expr& expr, int depth) {
     locals.try_emplace(&expr, depth);
 }
 
-//the issue is related to usage of variables
 void Interpreter::executeBlock(const std::vector<stmt_ptr>& statements, const env_ptr& environment) {
     env_ptr previous = this->environment;
     try {
@@ -175,6 +188,15 @@ void Interpreter::visitBlockStmt(const Block& stmt) {
     executeBlock(std::move(stmt.statements), env_ptr(new Environment(environment)));
     return;
 }
+
+void Interpreter::visitClassStmt(const Class& stmt) {
+    environment->define(stmt.name.lexeme, std::nullptr_t{});
+    class_ptr klass(new LoxClass(stmt.name.lexeme));
+    environment->assign(stmt.name, klass);
+
+    return;
+}
+
 void Interpreter::visitExpressionStmt(const Expression& stmt)
 {
     evaluate(stmt.expression);
@@ -225,7 +247,6 @@ void Interpreter::visitVarStmt(const Var& stmt) {
         value = evaluate(stmt.initializer);
     }
 
-    //THIS IS WHERE THE ERROR IS
     environment->define(stmt.name.lexeme, value);
 
     return;
@@ -341,6 +362,15 @@ Object Interpreter::visitCallExpr(const Call& expr) {
     }
 
     return function->call(*this, arguments);
+}
+
+Object Interpreter::visitGetExpr(const Get& expr) {
+    Object object = evaluate(expr.object);
+    if (std::holds_alternative<instance_ptr>(object)) {
+        return std::any_cast<instance_ptr>(std::visit(Token::ValueResolver{}, object))->get(expr.name);
+    }
+
+    throw RuntimeError(expr.name, "Only instances have properties.");
 }
 
 //CHALLENGE 10.2: Add Support for Lambda Expressions

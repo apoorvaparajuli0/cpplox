@@ -6,6 +6,12 @@ void Block::accept(StmtVisitor<void>& visitor) const {
   return visitor.visitBlockStmt(*this);
 }
 
+Class::Class(Token name, std::vector<stmt_ptr> methods) : 
+name{std::move(name)}, methods{std::move(methods)} {}
+void Class::accept(StmtVisitor<void>& visitor) const {
+  return visitor.visitClassStmt(*this);
+}
+
 Expression::Expression(expr_ptr expression) : 
 expression{std::move(expression)} {}
 void Expression::accept(StmtVisitor<void>& visitor) const {

@@ -13,7 +13,7 @@ add_library(src
             Environment.cpp "../headers/Environment.hpp"
             Resolver.cpp    "../headers/Resolver.hpp"
 
-            "../headers/LoxLambda.hpp"
+            "../headers/LoxLambda.hpp"    "../headers/LoxClass.hpp"
             "../headers/LoxFunction.hpp"  "../headers/ReturnError.hpp"
             "../headers/RuntimeError.hpp" "../headers/LoxCallable.hpp"
             "../headers/TokenType.hpp"    "../headers/Visitor.hpp"

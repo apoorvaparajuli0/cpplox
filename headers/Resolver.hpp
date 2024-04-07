@@ -39,9 +39,12 @@ class Resolver : ExprVisitor<Object>, StmtVisitor<void> {
 
         Object visitBinaryExpr(const Binary& expr) override;
         Object visitCallExpr(const Call& expr) override;
+        Object visitGetExpr(const Get& expr) override;
         Object visitGroupingExpr(const Grouping& expr) override;
         Object visitLiteralExpr(const Literal& expr) override;
         Object visitLogicalExpr(const Logical& expr) override;
+        Object visitSetExpr(const Set& expr) override;
+        Object visitThisExpr(const This& expr) override;
         Object visitUnaryExpr(const Unary& expr) override;
         Object visitVariableExpr(const Variable& expr) override;
         Object visitAssignExpr(const Assign& expr) override;
@@ -54,6 +57,7 @@ class Resolver : ExprVisitor<Object>, StmtVisitor<void> {
         void visitVarStmt(const Var& stmt) override;
         void visitWhileStmt(const While& stmt) override;
         void visitBlockStmt(const Block& stmt) override;
+        void visitClassStmt(const Class& stmt) override;
 
         void resolve(const std::vector<stmt_ptr>& statements);
 };

@@ -18,6 +18,12 @@ Object Call::accept(ExprVisitor<Object>& visitor) const {
   return visitor.visitCallExpr(*this);
 }
 
+Get::Get(expr_ptr object, Token name) : 
+object{std::move(object)}, name{std::move(name)} {}
+Object Get::accept(ExprVisitor<Object>& visitor) const {
+  return visitor.visitGetExpr(*this);
+}
+
 Grouping::Grouping(expr_ptr expression) : 
 expression{std::move(expression)} {}
 Object Grouping::accept(ExprVisitor<Object>& visitor) const {
@@ -34,6 +40,18 @@ Logical::Logical(expr_ptr left, Token operator_, expr_ptr right) :
 left{std::move(left)}, operator_{std::move(operator_)}, right{std::move(right)} {}
 Object Logical::accept(ExprVisitor<Object>& visitor) const {
   return visitor.visitLogicalExpr(*this);
+}
+
+Set::Set(expr_ptr object, Token name, expr_ptr value) : 
+object{std::move(object)}, name{std::move(name)}, value{std::move(value)} {}
+Object Set::accept(ExprVisitor<Object>& visitor) const {
+  return visitor.visitSetExpr(*this);
+}
+
+This::This(Token keyword) : 
+keyword{std::move(keyword)} {}
+Object This::accept(ExprVisitor<Object>& visitor) const {
+  return visitor.visitThisExpr(*this);
 }
 
 Unary::Unary(Token operator_, expr_ptr right) : 
