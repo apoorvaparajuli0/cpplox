@@ -11,7 +11,11 @@ class LoxCallable;
 class LoxClass;
 class LoxInstance;
 
-using Object = std::variant<std::nullptr_t, std::string, double, bool, std::shared_ptr<LoxCallable>, std::shared_ptr<LoxInstance>>;
+using call_ptr = std::shared_ptr<LoxCallable>;
+using class_ptr = std::shared_ptr<LoxClass>;
+using instance_ptr = std::shared_ptr<LoxInstance>;
+
+using Object = std::variant<std::nullptr_t, std::string, double, bool, call_ptr, instance_ptr>;
 
 class LoxCallable {
     public:
@@ -20,9 +24,5 @@ class LoxCallable {
         virtual std::string toString() = 0;
         virtual ~LoxCallable() = default;
 };
-
-using call_ptr = std::shared_ptr<LoxCallable>;
-using class_ptr = std::shared_ptr<LoxClass>;
-using instance_ptr = std::shared_ptr<LoxInstance>;
 
 #endif

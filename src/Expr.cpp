@@ -48,6 +48,12 @@ Object Set::accept(ExprVisitor<Object>& visitor) const {
   return visitor.visitSetExpr(*this);
 }
 
+Super::Super(Token keyword, Token method) : 
+keyword{std::move(keyword)}, method{std::move(method)} {}
+Object Super::accept(ExprVisitor<Object>& visitor) const {
+  return visitor.visitSuperExpr(*this);
+}
+
 This::This(Token keyword) : 
 keyword{std::move(keyword)} {}
 Object This::accept(ExprVisitor<Object>& visitor) const {

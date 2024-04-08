@@ -14,9 +14,10 @@ class Block : public Stmt {
 class Class : public Stmt {
   public:
     Token name;
+    expr_ptr superclass;
     std::vector<stmt_ptr> methods;
 
-  Class(Token name, std::vector<stmt_ptr> methods);
+  Class(Token name, expr_ptr superclass, std::vector<stmt_ptr> methods);
   void accept(StmtVisitor<void>& visitor) const override;
 };
 class Expression : public Stmt {

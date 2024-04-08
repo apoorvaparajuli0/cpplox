@@ -26,6 +26,20 @@ void Resolver::visitClassStmt(const Class& stmt) {
     declare(stmt.name);
     define(stmt.name);
 
+    if(stmt.superclass != std::nullptr_t{} && !(stmt.name.lexeme.compare(dynamic_cast<Variable*>(stmt.superclass.get())->name.lexeme))) {
+        Lox::error(dynamic_cast<Variable*>(stmt.superclass.get())->name, "A class can't inherit from itself");
+    }
+
+    if(stmt.superclass != std::nullptr_t{}) {
+        currentClass = ClassType::SUBCLASS;
+        resolve(stmt.superclass);
+    }
+
+    if(stmt.superclass != std::nullptr_t{}) {
+        beginScope();
+        scopes.top()["super"] = true;
+    }
+
     beginScope();
     scopes.top()["this"] = true;
 
@@ -39,6 +53,8 @@ void Resolver::visitClassStmt(const Class& stmt) {
     }
 
     endScope();
+
+    if(stmt.superclass != std::nullptr_t{}) endScope();
 
     currentClass = enclosingClass;
 
@@ -152,6 +168,18 @@ Object Resolver::visitLogicalExpr(const Logical& expr) {
 Object Resolver::visitSetExpr(const Set& expr) {
     resolve(expr.value);
     resolve(expr.object);
+
+    return std::nullptr_t{};
+}
+
+Object Resolver::visitSuperExpr(const Super& expr) {
+    if(currentClass == ClassType::NONE) {
+        Lox::error(expr.keyword, "Can't use 'super' outside of a class.");
+    } else if(currentClass != ClassType::SUBCLASS) {
+        Lox::error(expr.keyword, "Can't use 'super' in a class with no superclass.");
+    }
+
+    resolveLocal(&expr, expr.keyword);
 
     return std::nullptr_t{};
 }

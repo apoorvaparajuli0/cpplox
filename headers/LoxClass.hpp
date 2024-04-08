@@ -22,9 +22,10 @@ class LoxClass : public LoxCallable {
     public:
         std::string name;
         std::unordered_map<std::string, call_ptr> methods;
+        call_ptr superclass;
 
-        LoxClass(std::string name, std::unordered_map<std::string, call_ptr> methods) : 
-        name(name), methods(methods) 
+        LoxClass(std::string name, call_ptr superclass, std::unordered_map<std::string, call_ptr>& methods) : 
+        name(name), superclass(superclass), methods(methods) 
         {}
 
         call_ptr findMethod(std::string name);

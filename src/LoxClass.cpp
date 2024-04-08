@@ -7,6 +7,10 @@ call_ptr LoxClass::findMethod(std::string name) {
         return methods.at(name);
     }
 
+    if(superclass != std::nullptr_t{}) {
+        return dynamic_cast<LoxClass*>(superclass.get())->findMethod(name);
+    }
+
     return std::nullptr_t{};
 }
 

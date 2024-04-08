@@ -14,6 +14,7 @@ class Grouping;
 class Literal;
 class Logical;
 class Set;
+class Super;
 class This;
 class Unary;
 class Variable;
@@ -42,6 +43,7 @@ class ExprVisitor {
     virtual R visitLiteralExpr(const Literal& expr) = 0;
     virtual R visitLogicalExpr(const Logical& expr) = 0;
     virtual R visitSetExpr(const Set& expr) = 0;
+    virtual R visitSuperExpr(const Super& expr) = 0;
     virtual R visitThisExpr(const This& expr) = 0;
     virtual R visitUnaryExpr(const Unary& expr) = 0;
     virtual R visitVariableExpr(const Variable& expr) = 0;

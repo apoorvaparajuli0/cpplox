@@ -70,6 +70,14 @@ class Set : public Expr {
   Set(expr_ptr object, Token name, expr_ptr value);
   Object accept(ExprVisitor<Object>& visitor) const override;
 };
+class Super : public Expr {
+  public:
+    Token keyword;
+    Token method;
+
+  Super(Token keyword, Token method);
+  Object accept(ExprVisitor<Object>& visitor) const override;
+};
 class This : public Expr {
   public:
     Token keyword;

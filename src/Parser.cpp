@@ -40,6 +40,13 @@ stmt_ptr Parser::declaration() {
 
 stmt_ptr Parser::classDeclaration() {
     Token name = consume(IDENTIFIER, "Expect class name.");
+
+    expr_ptr superclass = std::nullptr_t{};
+    if(match({LESS})) {
+        consume(IDENTIFIER, "Expect superclass name.");
+        superclass = expr_ptr(new Variable(previous()));
+    }
+
     consume(LEFT_BRACE, "Expect '{' before class body.");
 
     std::vector<stmt_ptr> methods;
@@ -49,7 +56,7 @@ stmt_ptr Parser::classDeclaration() {
 
     consume(RIGHT_BRACE, "Expect '}' after class body.");
 
-    return stmt_ptr(new Class(name, methods));
+    return stmt_ptr(new Class(name, superclass, methods));
 }
 
 stmt_ptr Parser::statement() {
@@ -510,6 +517,14 @@ expr_ptr Parser::primary() {
 
     if(match({NUMBER, STRING})) {
         return expr_ptr(new Literal(previous().literal));
+    }
+
+    if(match({SUPER})) {
+        Token keyword = previous();
+        consume(DOT, "Expect '.' after 'super'");
+        Token method = consume(IDENTIFIER, "Expect superclass method name.");
+
+        return expr_ptr(new Super(keyword, method));
     }
 
     if(match({THIS})) return expr_ptr(new This(previous()));

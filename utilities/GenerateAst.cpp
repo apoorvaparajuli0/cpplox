@@ -17,6 +17,7 @@ int main(int argc, char** argv) {
       "Literal  : Object value",
       "Logical  : expr_ptr left, Token operator_, expr_ptr right",
       "Set      : expr_ptr object, Token name, expr_ptr value",
+      "Super    : Token keyword, Token method",
       "This     : Token keyword",
       "Unary    : Token operator_, expr_ptr right",
       "Variable : Token name"
@@ -27,7 +28,7 @@ int main(int argc, char** argv) {
     std::list<std::string> stmtTypes = {
     //"Break      : Object value",
       "Block      : std::vector<stmt_ptr> statements",
-      "Class      : Token name, std::vector<stmt_ptr> methods",
+      "Class      : Token name, expr_ptr superclass, std::vector<stmt_ptr> methods",
       "Expression : expr_ptr expression"/*, bool pure"*/,
       "Function   : Token name, std::vector<Token> params, std::vector<stmt_ptr> body",
       "If         : expr_ptr condition, stmt_ptr thenBranch, stmt_ptr elseBranch",

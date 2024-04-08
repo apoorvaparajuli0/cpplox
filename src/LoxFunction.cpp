@@ -12,6 +12,12 @@ LoxFunction::LoxFunction(const Function* declaration, env_ptr& closure, bool isI
     this->isInitializer = isInitializer;
 }
 
+LoxFunction::LoxFunction(const stmt_ptr& declaration, env_ptr& closure, bool isInitializer) {
+    this->declaration = declaration;
+    this->closure = closure;
+    this->isInitializer = isInitializer;
+}
+
 call_ptr LoxFunction::bind(LoxInstance instance) {
     env_ptr environment(new Environment(closure));
     instance_ptr inst_ptr(new LoxInstance(instance));

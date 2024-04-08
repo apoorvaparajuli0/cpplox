@@ -6,8 +6,8 @@ void Block::accept(StmtVisitor<void>& visitor) const {
   return visitor.visitBlockStmt(*this);
 }
 
-Class::Class(Token name, std::vector<stmt_ptr> methods) : 
-name{std::move(name)}, methods{std::move(methods)} {}
+Class::Class(Token name, expr_ptr superclass, std::vector<stmt_ptr> methods) : 
+name{std::move(name)}, superclass{std::move(superclass)}, methods{std::move(methods)} {}
 void Class::accept(StmtVisitor<void>& visitor) const {
   return visitor.visitClassStmt(*this);
 }

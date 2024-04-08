@@ -29,6 +29,7 @@ class Interpreter : ExprVisitor<Object>, StmtVisitor<void> {
         Object visitLiteralExpr(const Literal& expr) override;
         Object visitLogicalExpr(const Logical& expr) override;
         Object visitSetExpr(const Set& expr) override;
+        Object visitSuperExpr(const Super& expr) override;
         Object visitThisExpr(const This& expr) override;
         Object visitUnaryExpr(const Unary& expr) override;
         Object visitVariableExpr(const Variable& expr) override;

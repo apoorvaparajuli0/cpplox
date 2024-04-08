@@ -49,13 +49,27 @@ Object Interpreter::visitSetExpr(const Set& expr) {
     Object object = evaluate(expr.object);
 
     if (!std::holds_alternative<instance_ptr>(object)) { 
-      throw new RuntimeError(expr.name, "Only instances have fields.");
+      throw RuntimeError(expr.name, "Only instances have fields.");
     }
 
     Object value = evaluate(expr.value);
     dynamic_cast<LoxInstance*>(std::any_cast<instance_ptr>(std::visit(Token::ValueResolver{}, object)).get())->set(expr.name, value);
     
     return value;
+}
+
+Object Interpreter::visitSuperExpr(const Super& expr) {
+    int distance = locals.at(&expr);
+    call_ptr superclass = std::any_cast<call_ptr>(std::visit(Token::ValueResolver{}, environment->getAt(distance, "super")));
+    instance_ptr object = std::any_cast<instance_ptr>(std::visit(Token::ValueResolver{}, environment->getAt(distance - 1, "this")));
+
+    call_ptr method = dynamic_cast<LoxClass*>(superclass.get())->findMethod(expr.method.lexeme);
+
+    if(method == std::nullptr_t{}) {
+        throw RuntimeError(expr.method, "Undefined property '" + expr.method.lexeme + "'.");
+    }
+
+    return dynamic_cast<LoxFunction*>(method.get())->bind(*(object.get()));
 }
 
 Object Interpreter::visitThisExpr(const This& expr) {
@@ -192,17 +206,41 @@ void Interpreter::visitBlockStmt(const Block& stmt) {
 }
 
 void Interpreter::visitClassStmt(const Class& stmt) {
+    Object superclass = std::nullptr_t{};
+    if(stmt.superclass != std::nullptr_t{}) {
+        superclass = evaluate(stmt.superclass);
+
+        if(!(std::holds_alternative<call_ptr>(superclass))) {
+            throw RuntimeError(dynamic_cast<Variable*>(stmt.superclass.get())->name, "Superclass must be a class.");
+        }
+    }
+
     environment->define(stmt.name.lexeme, std::nullptr_t{});
+
+    if(stmt.superclass != std::nullptr_t{}) {
+        environment = env_ptr(new Environment(environment));
+        environment->define("super", superclass);
+    }
 
     std::unordered_map<std::string, call_ptr> methods;
 
     for(const stmt_ptr& method : stmt.methods) {
         Function* raw_method = dynamic_cast<Function*>(method.get());
-        call_ptr function(new LoxFunction(raw_method, environment, !(raw_method->name.lexeme.compare("init"))));
+        call_ptr function(new LoxFunction(method, environment, !(raw_method->name.lexeme.compare("init"))));
         methods[raw_method->name.lexeme] = function;
     }
 
-    class_ptr klass(new LoxClass(stmt.name.lexeme, methods));
+    call_ptr klass;
+    if(std::holds_alternative<call_ptr>(superclass)) {
+        klass = call_ptr(new LoxClass(stmt.name.lexeme, std::any_cast<call_ptr>(std::visit(Token::ValueResolver{}, superclass)), methods));
+    } else {
+        klass = call_ptr(new LoxClass(stmt.name.lexeme, std::nullptr_t{}, methods));
+    }
+
+    if(!(std::holds_alternative<std::nullptr_t>(superclass))) {
+        environment = environment->enclosing;
+    }
+
     environment->assign(stmt.name, klass);
 
     return;
