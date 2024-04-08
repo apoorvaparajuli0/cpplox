@@ -1,9 +1,11 @@
 #ifndef RESOLVER_HPP
 #define RESOLVER_HPP
 
+#include "unordered_map"
+#include "string"
+#include "memory"
 #include "stack"
 
-#include "Visitor.hpp"
 #include "Interpreter.hpp"
 
 class Resolver : ExprVisitor<Object>, StmtVisitor<void> {

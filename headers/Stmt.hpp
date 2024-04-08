@@ -1,8 +1,10 @@
 #ifndef STMT_HPP
 #define STMT_HPP
 
-#include "../headers/Visitor.hpp"
+#include "memory"
 #include "vector"
+
+#include "../headers/Visitor.hpp"
 
 class Block : public Stmt {
   public:

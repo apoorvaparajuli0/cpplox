@@ -1,10 +1,13 @@
 #ifndef LOXCLASS_HPP
 #define LOXCLASS_HPP
 
+#include "memory"
 #include "unordered_map"
 #include "string"
+#include "vector"
 
-#include "LoxFunction.hpp"
+#include "LoxCallable.hpp"
+#include "Token.hpp"
 
 class LoxInstance {
     private:

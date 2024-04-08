@@ -1,9 +1,11 @@
 #ifndef ENVIRONMENT_HPP
 #define ENVIRONMENT_HPP
 
-#include "unordered_map"
+#include "memory"
 #include "string"
+#include "unordered_map"
 
+#include "LoxCallable.hpp"
 #include "Token.hpp"
 
 class Environment {

@@ -1,14 +1,12 @@
-#include "memory"
-#include "utility"
-#include "ranges"
-
 #include "../headers/Interpreter.hpp"
+#include "../headers/RuntimeError.hpp"
+#include "../headers/Expr.hpp"
+#include "../headers/Stmt.hpp"
+#include "../headers/LoxCallable.hpp"
+#include "../headers/LoxClass.hpp"
+#include "../headers/LoxFunction.hpp"
 #include "../headers/ReturnError.hpp"
 #include "../headers/Lox.hpp"
-#include "../headers/Expr.hpp"
-#include "../headers/LoxClass.hpp"
-#include "../headers/Stmt.hpp"
-// #include "../headers/LoxLambda.hpp"
 
 Interpreter::Interpreter() {
     Object value = call_ptr(new Clock());

@@ -2,7 +2,6 @@
 #define RETURNERROR_HPP
 
 #include "stdexcept"
-#include "Token.hpp"
 
 class ReturnError : public std::runtime_error {
     public:

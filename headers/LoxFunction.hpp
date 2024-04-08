@@ -1,9 +1,13 @@
 #ifndef LOXFUNCTION_HPP
 #define LOXFUNCTION_HPP
 
+#include "memory"
+#include "vector"
+#include "string"
+
+#include "LoxCallable.hpp"
+#include "Visitor.hpp"
 #include "Environment.hpp"
-#include "Stmt.hpp"
-#include "RuntimeError.hpp"
 
 class LoxFunction : public LoxCallable {
     private:

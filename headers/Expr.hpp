@@ -1,8 +1,10 @@
 #ifndef EXPR_HPP
 #define EXPR_HPP
 
-#include "../headers/Visitor.hpp"
+#include "memory"
 #include "vector"
+
+#include "../headers/Visitor.hpp"
 
 class Assign : public Expr {
   public:

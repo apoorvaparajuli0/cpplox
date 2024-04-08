@@ -1,9 +1,12 @@
 #ifndef ASTPRINTER_HPP
 #define ASTPRINTER_HPP
 
+#include "string"
 #include "initializer_list"
-#include "list"
-#include "Expr.hpp"
+#include "sstream"
+
+#include "Visitor.hpp"
+#include "LoxCallable.hpp"
 
 class AstPrinter : ExprVisitor<Object> {
     public:

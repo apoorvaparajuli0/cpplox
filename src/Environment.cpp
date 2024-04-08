@@ -1,9 +1,6 @@
 #include "../headers/Environment.hpp"
 #include "../headers/RuntimeError.hpp"
 
-#include "utility"
-#include "ranges"
-
 void Environment::define(std::string name, const Object& value) {
     values[name] = value;
 }

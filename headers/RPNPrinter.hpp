@@ -3,21 +3,17 @@
 
 //CHALLENGE 5.3: Create a Reverse Polish Notation Printer
 
-#include "initializer_list"
-#include "list"
-#include "Expr.hpp"
+// class RPNPrinter : ExprVisitor<Object> {
+//     public:
+//         std::string print(std::initializer_list<expr_ptr>& exprs);
+//         std::string format(std::string name, std::initializer_list<const Expr*> exprs);
+//         Object visitBinaryExpr(const Binary& expr) override;
+//         Object visitGroupingExpr(const Grouping& expr) override;
+//         Object visitLiteralExpr(const Literal& expr) override;
+//         Object visitUnaryExpr(const Unary& expr) override;
 
-class RPNPrinter : ExprVisitor<Object> {
-    public:
-        std::string print(std::initializer_list<expr_ptr>& exprs);
-        std::string format(std::string name, std::initializer_list<const Expr*> exprs);
-        Object visitBinaryExpr(const Binary& expr) override;
-        Object visitGroupingExpr(const Grouping& expr) override;
-        Object visitLiteralExpr(const Literal& expr) override;
-        Object visitUnaryExpr(const Unary& expr) override;
-
-    private:
-        std::stringstream oss;
-};
+//     private:
+//         std::stringstream oss;
+// };
 
 #endif

@@ -1,5 +1,6 @@
 #include "../headers/LoxClass.hpp"
 #include "../headers/LoxFunction.hpp"
+#include "../headers/RuntimeError.hpp"
 
 //LOXCLASS
 call_ptr LoxClass::findMethod(std::string name) {

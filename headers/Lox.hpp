@@ -3,6 +3,7 @@
 
 #include "string"
 
+#include "Interpreter.hpp"
 #include "RuntimeError.hpp"
 
 class Lox {

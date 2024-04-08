@@ -1,4 +1,6 @@
 #include "../headers/AstPrinter.hpp"
+#include "../headers/Stmt.hpp"
+#include "../headers/Expr.hpp"
 
 std::string AstPrinter::print(std::initializer_list<expr_ptr>& exprs) {
     for(const auto& expr : exprs) {

@@ -1,7 +1,7 @@
 #include "../headers/Resolver.hpp"
+#include "../headers/Lox.hpp"
 #include "../headers/Stmt.hpp"
 #include "../headers/Expr.hpp"
-#include "../headers/Lox.hpp"
 
 Resolver::Resolver(Interpreter& interpreter) : interpreter(interpreter) {}
 

@@ -2,10 +2,9 @@
 #define TOKEN_HPP
 
 #include "string"
-#include "variant"
 #include "sstream"
 #include "any"
-#include "typeinfo"
+#include "memory"
 
 #include "TokenType.hpp"
 #include "LoxCallable.hpp"

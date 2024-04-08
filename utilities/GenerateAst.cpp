@@ -76,8 +76,7 @@ void defineHeader(std::string outputDir, std::string exprName, std::string stmtN
     std::ofstream out;
     out.open(path, std::ios::out);
     out << "#ifndef VISITOR_HPP\n#define VISITOR_HPP\n\n";
-    out << "#include \"any\"\n";
-    out << "#include \"memory\"\n";
+    out << "#include \"memory\"\n\n";
     out << "#include \"../headers/Token.hpp\"\n\n";
 
     out << "//Expression Types\n";
@@ -127,8 +126,9 @@ void defineHeader(std::string outputDir, std::string exprName, std::string stmtN
 
     out << "#ifndef " + toUpperCase(exprName) + "_HPP\n";
     out << "#define " + toUpperCase(exprName) + "_HPP\n\n";
-    out << "#include \"../headers/Visitor.hpp\"\n";
+    out << "#include \"memory\"\n";
     out << "#include \"vector\"\n\n";
+    out << "#include \"../headers/Visitor.hpp\"\n\n";
 
     for(std::string type : exprTypes) {
         std::string exprType = trim(split(type, ": ").front());
@@ -158,8 +158,9 @@ void defineHeader(std::string outputDir, std::string exprName, std::string stmtN
 
     out << "#ifndef " + toUpperCase(stmtName) + "_HPP\n";
     out << "#define " + toUpperCase(stmtName) + "_HPP\n\n";
-    out << "#include \"../headers/Visitor.hpp\"\n";
+    out << "#include \"memory\"\n";
     out << "#include \"vector\"\n\n";
+    out << "#include \"../headers/Visitor.hpp\"\n\n";
 
     for(std::string type : stmtTypes) {
         std::string stmtType = trim(split(type, ": ").front());

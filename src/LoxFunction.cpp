@@ -1,9 +1,8 @@
 #include "../headers/LoxFunction.hpp"
+#include "../headers/Stmt.hpp"
 #include "../headers/LoxClass.hpp"
-#include "../headers/LoxCallable.hpp"
-#include "../headers/Visitor.hpp"
-#include "../headers/Interpreter.hpp"
 #include "../headers/ReturnError.hpp"
+#include "../headers/Interpreter.hpp"
 
 //not sure if this actually sets our stmt_ptr correctly
 LoxFunction::LoxFunction(const Function* declaration, env_ptr& closure, bool isInitializer) {

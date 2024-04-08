@@ -2,7 +2,7 @@
 #define RUNTIME_ERROR_HPP
 
 #include "stdexcept"
-#include "Token.hpp"
+#include "string"
 
 class RuntimeError : public std::runtime_error {
     public:

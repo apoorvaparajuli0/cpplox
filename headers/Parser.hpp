@@ -1,9 +1,15 @@
 #ifndef PARSER_HPP
 #define PARSER_HPP
 
+#include "stdexcept"
 #include "vector"
+#include "memory"
+#include "initializer_list"
+#include "string"
 
+#include "Token.hpp"
 #include "Visitor.hpp"
+#include "TokenType.hpp"
 
 class Parser {
 
