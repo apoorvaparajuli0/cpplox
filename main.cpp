@@ -1,4 +1,7 @@
 #include "./jlox/headers/Lox.hpp"
+#include "./clox/headers/common.hpp"
+#include "./clox/headers/chunk.hpp"
+#include "./clox/headers/debug.hpp"
 
 int main(int argc, char** argv){
     if(argc > 3) {
@@ -18,8 +21,15 @@ int main(int argc, char** argv){
         }
     } 
     //Leave this while developing clox
-    else if(argc == 1) {
-        //run clox prompt
+    else if(argc == 1) {  
+        Chunk chunk;
+        initChunk(&chunk);
+        int constant = addConstant(&chunk, 1.2);
+        writeChunk(&chunk, OP_CONSTANT, 123);
+        writeChunk(&chunk, constant, 123);
+        writeChunk(&chunk, OP_RETURN, 123);
+        disassembleChunk(&chunk, "test chunk");
+        freeChunk(&chunk);
     }
 
     return 0;

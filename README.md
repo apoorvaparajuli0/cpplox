@@ -1,13 +1,6 @@
 An implementation of jlox & clox in C++ following along with Robert Nystrom's book, [Crafting Interpreters](https://craftinginterpreters.com/)
 
-## Challenge Features to Add to Bytecode Interpreter
--Add Break Statements \
--Add Lambda Expressions \
--Add Ternary Operators \
--Add Comma Expression \
--Add Multi-Line Nested Comments \
--Add REPL Suport for Evaluating Expressions \
--Add Error Productions for more detailed errors \
--Add Built-In Getters and Setters \
--Add support for static methods \
--Add support for multiple and/or virtual inheritance (research mixins, traits, extension methods as well)
+### Supported Features
+The jlox implementation has no additional features from what was mentioned in the book, it's pure lox as specified.  
+<br/>
+The clox implementation is a work in progress and I'm planning on implementing the challenge features that I had previously implemented in jlox there, as well as whatever is specified in the upcoming challenges.
