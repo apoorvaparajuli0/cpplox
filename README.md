@@ -10,4 +10,4 @@ An implementation of jlox & clox in C++ following along with Robert Nystrom's bo
 -Add Error Productions for more detailed errors \
 -Add Built-In Getters and Setters \
 -Add support for static methods \
--Add support for multiple and/or virtual inheritance (research mixins, traits, extension methods as well) \
+-Add support for multiple and/or virtual inheritance (research mixins, traits, extension methods as well)
