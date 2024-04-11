@@ -15,17 +15,13 @@ class Interpreter : ExprVisitor<Object>, StmtVisitor<void> {
         env_ptr globals = env_ptr(new Environment());
         env_ptr environment = globals;
 
-        Interpreter();
+        Interpreter() = default;
         void interpret(std::vector<stmt_ptr>& statements);
         void resolve(const Expr& expr, int depth);
 
         Object visitBinaryExpr(const Binary& expr) override;
         Object visitCallExpr(const Call& expr) override;
         Object visitGetExpr(const Get& expr) override;
-
-        //CHALLENGE 10.2: Add Support for Lambda Expressions
-        // Object visitLambdaExpr(const Lambda& expr) override;
-        
         Object visitGroupingExpr(const Grouping& expr) override;
         Object visitLiteralExpr(const Literal& expr) override;
         Object visitLogicalExpr(const Logical& expr) override;
@@ -35,9 +31,6 @@ class Interpreter : ExprVisitor<Object>, StmtVisitor<void> {
         Object visitUnaryExpr(const Unary& expr) override;
         Object visitVariableExpr(const Variable& expr) override;
         Object visitAssignExpr(const Assign& expr) override;
-
-        //CHALLENGE 9.3: Add Support for Break Statements
-        // void visitBreakStmt(const Break& stmt) override;
         
         void visitExpressionStmt(const Expression& stmt) override;
         void visitFunctionStmt(const Function& stmt) override;
@@ -65,11 +58,6 @@ class Interpreter : ExprVisitor<Object>, StmtVisitor<void> {
                     return "<native fn>";
                 }
         };
-
-        //CHALLENGE 9.3: Add Support for Break Statements
-        //kind of an inelegant solution to the "break" problem, but
-        //wanted to just finish up chapter
-        // bool breakEncountered = false;
 
         Object evaluate(const expr_ptr& expr);
         void execute(const stmt_ptr& stmt);

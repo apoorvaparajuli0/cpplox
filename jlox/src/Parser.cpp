@@ -14,8 +14,6 @@ std::vector<stmt_ptr> Parser::parse() {
 }
 
 expr_ptr Parser::expression() {
-    //CHALLENGE(S) 6.1 & 6.2:
-    // return ternary();
     return assignment();
 }
 
@@ -23,13 +21,6 @@ stmt_ptr Parser::declaration() {
     try {
         if(match({CLASS})) return classDeclaration();
         if(match({FUN})) return function("function");
-        //CHALLENGE 10.2: Add Support for Lambda Expressions
-        // {
-        //     if(check(IDENTIFIER)) return function("function");
-        //     stmt_ptr ret(new Expression(lambda()));
-        //     consume(SEMICOLON, "Expect ';' after lone lambda expression statement.");
-        //     return ret;
-        // }
         if(match({VAR})) return varDeclaration();
         return statement();
     } catch(const ParseError& err) {
@@ -60,8 +51,6 @@ stmt_ptr Parser::classDeclaration() {
 }
 
 stmt_ptr Parser::statement() {
-    //CHALLENGE 9.3: Add Support for Break Statements
-    // if(match({BREAK})) return breakStatement();
     if(match({FOR})) return forStatement();
     if(match({IF})) return ifStatement();
     if(match({PRINT})) return printStatement();
@@ -73,10 +62,6 @@ stmt_ptr Parser::statement() {
 }
 
 stmt_ptr Parser::forStatement() {
-
-    //CHALLENGE 9.3: Add Support for Break Statements
-    // inLoop = true;
-
     consume(LEFT_PAREN, "Expect '(' after 'for'.");
     stmt_ptr initializer;
 
@@ -137,19 +122,8 @@ stmt_ptr Parser::forStatement() {
         body = std::move(temp);
     }
 
-    //CHALLENGE 9.3: Add Support for Break Statements
-    // inLoop = false;
-
     return body;
 }
-
-//CHALLENGE 9.3: Add Support for Break Statements
-// stmt_ptr Parser::breakStatement() {
-//     consume(SEMICOLON, "';' Must Succeed Break Statement");
-//     if(!inLoop) throw error(previous(), "'break' statement must be enclosed in loop.");
-    
-//     return stmt_ptr(new Break(std::nullptr_t{}));
-// }
 
 stmt_ptr Parser::ifStatement() {
     consume(LEFT_PAREN, "Expect '(' after 'if'.");
@@ -198,26 +172,17 @@ stmt_ptr Parser::varDeclaration() {
 }
 
 stmt_ptr Parser::whileStatement() {
-    //CHALLENGE 9.3: Add Support for Break Statements
-    // inLoop = true;
 
     consume(LEFT_PAREN, "Expect '(' Before Condition.");
     expr_ptr condition = expression();
     consume(RIGHT_PAREN, "Expect ')' Before Condition.");
     stmt_ptr body = statement();
-
-    //CHALLENGE 9.3: Add Support for Break Statements
-    // inLoop = false;
     
     return stmt_ptr(new While(std::move(condition), std::move(body)));
 }
 
 stmt_ptr Parser::expressionStatement() {
     expr_ptr expr = expression();
-    //CHALLENGE 8.1: Add Support for Expression Evaluation in REPL
-    // if(!check(SEMICOLON)) {
-    //     return stmt_ptr(new Expression(std::move(expr), true));
-    // }
     consume(SEMICOLON, "Expect ';' after expression");
     return stmt_ptr(new Expression(std::move(expr)/*, false*/));
 }
@@ -263,8 +228,6 @@ expr_ptr Parser::assignment() {
         Token equals = previous();
         expr_ptr value = assignment();
 
-        //supposedly similar to instanceof checks, probably not the best practice
-        //but whatevs
         if(dynamic_cast<Variable*>(expr.get()) != nullptr) {
             Token name = dynamic_cast<Variable*>(expr.get())->name;
             return expr_ptr(new Assign(name, std::move(value)));
@@ -307,131 +270,23 @@ expr_ptr Parser::log_and() {
     return expr;
 }
 
-/**
- * CHALLENGE(S) 6.1 & 6.2:
- * Add Support for C-Style Ternary Operations
- * and the Comma operator
-*/
-
-// expr_ptr Parser::ternary() {
-//     if(match({QUESTION})) {
-//         try {
-//             expr_ptr right_err = branch();
-//         } catch(const ParseError& err) {
-//             throw error(peek(), "An Expression Must Precede the '?' Operator");
-//         }
-//     }
-
-//     expr_ptr expr = parseBinaryExpression({QUESTION}, &Parser::equality , &Parser::branch );
-
-//     return expr;
-// }
-
-// expr_ptr Parser::branch() {
-//     if(match({COLON})) {
-//         try {
-//             expr_ptr right_err = comma();
-//         } catch(const ParseError& err) {
-//             throw error(peek(), "An Expression Must Precede the ':' Operator");
-//         }
-//     }
-    
-//     expr_ptr expr = parseBinaryExpression({COLON}, &Parser::comma, &Parser::comma);
-
-//     return expr;
-// }
-
-// expr_ptr Parser::comma() {
-//     if(match({COMMA})) {
-//         try {
-//             expr_ptr right_err = equality();
-//         } catch(const ParseError& err) {
-//             throw error(peek(), "An Expression Must Precede the ',' Operator");
-//         }
-//     }
-
-//     expr_ptr expr = parseBinaryExpression({COMMA}, &Parser::equality, &Parser::equality);
-
-//     return expr;
-// }
-
 expr_ptr Parser::equality() {
-    /**
-     * CHALLENGE 6.3:
-     * Add Error Productions for Binary Operators
-     * Without LH Operands
-    */
-    // if(match({BANG_EQUAL, EQUAL_EQUAL})) {
-    //     try {
-    //         expr_ptr right_err = comparison();
-    //     } catch(const ParseError& err) {
-    //         throw error(peek(), "An Expression Must Precede an Equality Operator");
-    //     }
-    // }
-
     expr_ptr expr = parseBinaryExpression({BANG_EQUAL, EQUAL_EQUAL}, &Parser::comparison, &Parser::comparison);
-
     return expr;
 }
 
 expr_ptr Parser::comparison() {
-    /**
-     * CHALLENGE 6.3:
-     * Add Error Productions for Binary Operators
-     * Without LH Operands
-    */
-    // if(match({GREATER, GREATER_EQUAL, LESS, LESS_EQUAL})) {
-    //     try {
-    //         expr_ptr right_err = term();
-    //     } catch(const ParseError& err) {
-    //         throw error(peek(), "An Expression Must Precede a Comparison Operator");
-    //     }
-    // }
-
     expr_ptr expr = parseBinaryExpression({GREATER, GREATER_EQUAL, LESS, LESS_EQUAL}, &Parser::term, &Parser::term);
-
     return expr;
 }
 
-/**
- * Didn't put error productions here since MINUS without a
- * preceding expression could be interpreted as a unary subtraction
- *  and PLUS not not having one is handled by the higher precedence
- *  error production 
-*/
 expr_ptr Parser::term() {
-    /**
-     * CHALLENGE 6.3:
-     * Add Error Productions for Binary Operators
-     * Without LH Operands
-    */
-    // if(match({PLUS})) {
-    //     try {
-    //         expr_ptr right_err = factor();
-    //     } catch(const ParseError& err) {
-    //         throw error(peek(), "'+' Is Missing A Left Hand Operand");
-    //     }
-    // }
     expr_ptr expr = parseBinaryExpression({MINUS, PLUS}, &Parser::factor, &Parser::factor);
     return expr;
 }
 
 expr_ptr Parser::factor() {
-    /**
-     * CHALLENGE 6.3:
-     * Add Error Productions for Binary Operators
-     * Without LH Operands
-    */
-    // if(match({SLASH, STAR})) {
-    //     try {
-    //         expr_ptr right_err = unary();
-    //     } catch(const ParseError& err) {
-    //         throw error(peek(), "An Expression Must Precede the Multiplication/Division Operators");
-    //     }
-    // }
-
     expr_ptr expr = parseBinaryExpression({SLASH, STAR}, &Parser::unary, &Parser::unary);
-
     return expr;
 }
 
@@ -464,9 +319,6 @@ expr_ptr Parser::finishCall(expr_ptr& callee) {
 expr_ptr Parser::call() {
     expr_ptr expr = primary();
 
-    //CHALLENGE 10.2: Add Support for Lambda Expressions
-    // expr_ptr expr = lambda();
-
     while (true) { 
       if (match({LEFT_PAREN})) {
         expr = finishCall(expr);
@@ -481,34 +333,6 @@ expr_ptr Parser::call() {
 
     return expr;
 }
-
-//CHALLENGE 10.2: Add Support for Lambda Expressions
-// expr_ptr Parser::lambda() {
-
-//     //this is kind of iffy since it's possible to be called via the call() handler
-//     //and the declaration() handler, I'm sure it's buggy but since it's only a challenge, eh.
-//     if(!match({FUN}) && previous().type != FUN) {
-//         return primary();
-//     }
-
-//     consume(LEFT_PAREN, "Expect parameter list in lambda function declaration.");
-//     std::vector<Token> parameters;
-//     if (!check(RIGHT_PAREN)) {
-//       do {
-//         if (parameters.size() >= 255) {
-//           error(peek(), "Can't have more than 255 parameters.");
-//         }
-//         parameters.push_back(consume(IDENTIFIER, "Expect parameter name."));
-//       } while (match({COMMA}));
-//     }
-
-//     consume(RIGHT_PAREN, "Expect ')' after parameters.");
-
-//     consume(LEFT_BRACE, "Expect '{' before lambda body.");
-//     std::vector<stmt_ptr> body = block();
-
-//     return expr_ptr(new Lambda(parameters, std::move(body)));
-// }
 
 expr_ptr Parser::primary() {
     if(match({FALSE})) return expr_ptr(new Literal(false));

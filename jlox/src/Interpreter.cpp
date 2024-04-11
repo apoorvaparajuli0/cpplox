@@ -165,13 +165,7 @@ Object Interpreter::evaluate(const expr_ptr& expr) {
 }
 
 void Interpreter::execute(const stmt_ptr& stmt) {
-    //CHALLENGE 8.1: Add Support for Expression Evaluation in REPL
-    // if(dynamic_cast<Expression*>(stmt.get()) != nullptr && dynamic_cast<Expression*>(stmt.get())->pure) {
-    //     Object result = evaluate(dynamic_cast<Expression*>(stmt.get())->expression);
-    //     printf("%s\n", std::visit(Token::Resolver{}, result).c_str());
-    // } else {
-        stmt->accept(*this);
-    // }
+    stmt->accept(*this);
 }
 
 void Interpreter::resolve(const Expr& expr, int depth) {
@@ -257,12 +251,6 @@ void Interpreter::visitFunctionStmt(const Function& stmt) {
     return;
 }
 
-//CHALLENGE 9.3: Add Support for Break Statements
-// void Interpreter::visitBreakStmt(const Break& stmt) {
-//     breakEncountered = true;
-//     return;
-// }
-
 void Interpreter::visitIfStmt(const If& stmt) {
     if(isTruthy(evaluate(stmt.condition))) {
         execute(stmt.thenBranch);
@@ -301,16 +289,8 @@ void Interpreter::visitVarStmt(const Var& stmt) {
 
 void Interpreter::visitWhileStmt(const While& stmt) {
     while(isTruthy(evaluate(stmt.condition))) {
-        //CHALLENGE 9.3: Add Support for Break Statements
-        // if(breakEncountered) {
-        //     break;
-        // }
-
         execute(stmt.body);
     }
-
-    //CHALLENGE 9.3: Add Support for Break Statements
-    // breakEncountered = false;
 
     return;
 }
@@ -366,11 +346,7 @@ Object Interpreter::visitBinaryExpr(const Binary& expr) {
         case PLUS:
             if(std::holds_alternative<double>(left) && std::holds_alternative<double>(right)) {
                 return std::any_cast<double>(left_operand) + std::any_cast<double>(right_operand);
-            } 
-            //CHALLENGE 7.2: When either operand of '+' is string, convert other operand to string and concatenate
-            // else if(std::holds_alternative<std::string>(left) != std::holds_alternative<std::string>(right)) {
-            //     return stringify(left) + stringify(right);
-            // } 
+            }
             else if(std::holds_alternative<std::string>(left) && std::holds_alternative<std::string>(right)) {
                 return std::any_cast<std::string>(left_operand) + std::any_cast<std::string>(right_operand);
             } else {
@@ -379,8 +355,6 @@ Object Interpreter::visitBinaryExpr(const Binary& expr) {
             break;
         case SLASH:
             checkNumberOperands(expr.operator_, left, right);
-            //CHALLENGE 7.3: Throw error for division by zero
-            // if(std::any_cast<double>(right) == 0) throw RuntimeError(expr.operator_, "Attempted Division By Zero");
             return std::any_cast<double>(left) / std::any_cast<double>(right);
         case STAR:
             checkNumberOperands(expr.operator_, left, right);
@@ -419,9 +393,3 @@ Object Interpreter::visitGetExpr(const Get& expr) {
 
     throw RuntimeError(expr.name, "Only instances have properties.");
 }
-
-//CHALLENGE 10.2: Add Support for Lambda Expressions
-// Object Interpreter::visitLambdaExpr(const Lambda& expr) {
-//     call_ptr function(new LoxLambda(expr, environment));
-//     return function;
-// }

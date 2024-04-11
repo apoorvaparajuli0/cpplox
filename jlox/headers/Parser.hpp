@@ -16,9 +16,6 @@ class Parser {
     std::vector<Token> tokens;
     int current = 0;
 
-    //CHALLENGE 9.3: Add Support for Break Statements
-    // bool inLoop = false;
-
     public:
         class ParseError : std::runtime_error {
             public:
@@ -32,18 +29,6 @@ class Parser {
         std::vector<stmt_ptr> parse();
     
     private:
-        /**
-         * CHALLENGE(S) 6.1 & 6.2:
-         * Add Support for C-Style Ternary Operations
-         * and the Comma operator
-        */
-        // expr_ptr ternary();
-        // expr_ptr branch();
-        // expr_ptr comma();
-
-        //CHALLENGE 9.3: Add Support for Break Statements
-        // stmt_ptr breakStatement();
-        
         stmt_ptr declaration();
         stmt_ptr classDeclaration();
         stmt_ptr statement();
@@ -68,9 +53,6 @@ class Parser {
         expr_ptr unary();
         expr_ptr finishCall(expr_ptr& callee);
         expr_ptr call();
-
-        //CHALLENGE 10.2: Add Support for Lambda Expressions
-        // expr_ptr lambda();
         expr_ptr primary();
 
         bool match(std::initializer_list<TokenType> types);

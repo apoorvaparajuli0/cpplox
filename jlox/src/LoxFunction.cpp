@@ -4,7 +4,6 @@
 #include "../headers/ReturnError.hpp"
 #include "../headers/Interpreter.hpp"
 
-//not sure if this actually sets our stmt_ptr correctly
 LoxFunction::LoxFunction(const Function* declaration, env_ptr& closure, bool isInitializer) {
     this->declaration = std::shared_ptr<const Stmt>(declaration);
     this->closure = closure;
@@ -38,7 +37,6 @@ Object LoxFunction::call(Interpreter& interpreter, std::vector<Object>& argument
     env_ptr environment = env_ptr(new Environment(closure));
 
     for (int i = 0; i < dynamic_cast<const Function*>(declaration.get())->params.size(); i++) {
-        //might want to do sequence of ifs casting to different types since any_cast to Object is prone to failure
         environment->define(dynamic_cast<const Function*>(declaration.get())->params.at(i).lexeme, arguments.at(i));
     }
 

@@ -23,8 +23,7 @@ void Environment::assignAt(int distance, Token name, const Object& value) {
 }
 
 Object Environment::get(Token name) {
-    //CHALLENGE 8.2: Make it an Error to Access an Uninitialized Variable
-    if(values.contains(name.lexeme)/* && !(std::visit(Token::Resolver{}, values[name.lexeme]) == "null")) */) {
+    if(values.contains(name.lexeme)) {
         return values.at(name.lexeme);
     }
 

@@ -7,8 +7,6 @@ int main(int argc, char** argv) {
     }
 
     std::list<std::string> exprTypes = {
-    //CHALLENGE 10.2: Add Support for Lambda Expressions
-    //   "Lambda   : std::vector<Token> params, std::vector<stmt_ptr> body",
       "Assign   : Token name, expr_ptr value",
       "Binary   : expr_ptr left, Token operator_, expr_ptr right",
       "Call     : expr_ptr callee, Token paren, std::vector<expr_ptr> arguments", 
@@ -23,13 +21,10 @@ int main(int argc, char** argv) {
       "Variable : Token name"
     };
 
-    //CHALLENGE 8.1: Add Support for Expression Evaluation in REPL
-    //CHALLENGE 9.3: Add Support for Break Statements
     std::list<std::string> stmtTypes = {
-    //"Break      : Object value",
       "Block      : std::vector<stmt_ptr> statements",
       "Class      : Token name, expr_ptr superclass, std::vector<stmt_ptr> methods",
-      "Expression : expr_ptr expression"/*, bool pure"*/,
+      "Expression : expr_ptr expression",
       "Function   : Token name, std::vector<Token> params, std::vector<stmt_ptr> body",
       "If         : expr_ptr condition, stmt_ptr thenBranch, stmt_ptr elseBranch",
       "Print      : expr_ptr expression",
@@ -255,7 +250,6 @@ std::string toLowerCase(std::string toLower) {
     return ret;
 }
 
-//trims preceding and subsequent whitespace from a string
 std::string trim(std::string toTrim) {
 
     int i = 0;
@@ -270,8 +264,6 @@ std::string trim(std::string toTrim) {
     return std::string{toTrim.substr(i, j + 1)};
 }
 
-//splits a string n times depending on the number of occurrences of "splitPoint" in
-//str_to_split
 std::list<std::string> split(std::string str_to_split, std::string splitPoint) {
     
     if(str_to_split.find(splitPoint) == std::string::npos) return std::list{str_to_split};

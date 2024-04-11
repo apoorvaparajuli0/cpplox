@@ -16,7 +16,6 @@ class LoxFunction : public LoxCallable {
         bool isInitializer;
 
     public:
-        //not sure if this actually sets our stmt_ptr correctly
         LoxFunction(const Function* declaration, env_ptr& closure, bool isInitializer);
         LoxFunction(const stmt_ptr& declaration, env_ptr& closure, bool isInitializer);
         call_ptr bind(LoxInstance instance);
