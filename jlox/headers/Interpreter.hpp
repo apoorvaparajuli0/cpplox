@@ -15,7 +15,7 @@ class Interpreter : ExprVisitor<Object>, StmtVisitor<void> {
         env_ptr globals = env_ptr(new Environment());
         env_ptr environment = globals;
 
-        Interpreter() = default;
+        Interpreter();
         void interpret(std::vector<stmt_ptr>& statements);
         void resolve(const Expr& expr, int depth);
 
