@@ -5,10 +5,14 @@
 
 typedef double Value;
 
+/*
+ a constant pool for values that our virtual machine will use. Each array
+ is associated with a bytecode chunk
+*/
 typedef struct {
-  int capacity;
-  int count;
-  Value* values;
+	int capacity;
+	int count;
+	Value* values;
 } ValueArray;
 
 void initValueArray(ValueArray* array);
