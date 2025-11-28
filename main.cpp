@@ -4,7 +4,7 @@
 #include "./clox/headers/debug.hpp"
 
 int main(int argc, char** argv){
-    if(argc > 3 || std::string(argv[0]) != "cpplox" || argc < 2) {
+    if(argc > 3 || std::string(argv[0]) != "./cpplox" || argc < 2) {
         printf("%s\n", "Usage: cpplox -[implementation (e.g. clox, jlox)] [script]");
         exit(-1);
     } 
