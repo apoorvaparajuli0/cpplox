@@ -5,6 +5,7 @@
 #include "vector"
 #include "memory"
 #include "chrono"
+#include "iostream"
 
 #include "Visitor.hpp"
 #include "Environment.hpp"

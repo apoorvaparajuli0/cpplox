@@ -355,10 +355,10 @@ Object Interpreter::visitBinaryExpr(const Binary& expr) {
             break;
         case SLASH:
             checkNumberOperands(expr.operator_, left, right);
-            return std::any_cast<double>(left) / std::any_cast<double>(right);
+            return std::any_cast<double>(left_operand) / std::any_cast<double>(right_operand);
         case STAR:
             checkNumberOperands(expr.operator_, left, right);
-            return std::any_cast<double>(left) * std::any_cast<double>(right);
+            return std::any_cast<double>(left_operand) * std::any_cast<double>(right_operand);
     }
 
     return std::nullptr_t{};
