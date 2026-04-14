@@ -34,20 +34,11 @@ void writeChunk(Chunk* chunk, uint8_t byte, int line) {
 		int oldCapacity = chunk->capacity;
 		chunk->capacity = GROW_CAPACITY(oldCapacity);
 		chunk->code = GROW_ARRAY(uint8_t, chunk->code, oldCapacity, chunk->capacity);
-		// chunk->lines = GROW_ARRAY(int, chunk->lines,
-		// oldCapacity, chunk->capacity);
+		chunk->lines = GROW_ARRAY(int, chunk->lines,oldCapacity, chunk->capacity);
 	}
 
-	int oldLineLength = length(chunk->lines);
-
-	if (line > oldLineLength) {
-		chunk->lines = GROW_ARRAY(int, chunk->lines, 
-		oldLineLength, oldLineLength + 1);
-	}
-
-	chunk->code[chunk->count] = byte;
-	// chunk->lines[chunk->count] = line;
-	chunk->lines[line]++;
+	chunk->code[chunk->count] = byte;  
+	chunk->lines[chunk->count] = line;
 	chunk->count++;
 }
 
@@ -66,21 +57,4 @@ void writeConstant(Chunk* chunk, Value value, int line) {
 		oldLineLength, oldLineLength + 1);
 	}
 
-}
-
-int getLine(Chunk* chunk, int index) {
-	int* line = chunk->lines;
-	int instrCount = 0;
-	int lineNo = 0;
-
-	while(line != nullptr) {
-		if (instrCount >= index) {
-			return lineNo;
-		}
-		instrCount += *line;
-		line++;
-		lineNo++;
-	}
-
-	return -1;
 }

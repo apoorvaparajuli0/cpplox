@@ -2,6 +2,7 @@
 #include "./clox/headers/common.hpp"
 #include "./clox/headers/chunk.hpp"
 #include "./clox/headers/debug.hpp"
+#include "./clox/headers/vm.hpp"
 
 int main(int argc, char** argv){
     if(argc > 3 || argc < 2) {
@@ -23,6 +24,7 @@ int main(int argc, char** argv){
             Lox::runPrompt();
         } else if(std::string(argv[1]) == "-clox") {
             //run clox prompt
+            initVM();
             Chunk chunk;
             initChunk(&chunk);
             int constant = addConstant(&chunk, 1.2);
@@ -30,6 +32,8 @@ int main(int argc, char** argv){
             writeChunk(&chunk, constant, 123);
             writeChunk(&chunk, OP_RETURN, 123);
             disassembleChunk(&chunk, "test chunk");
+            interpret(&chunk);
+            freeVM();
             freeChunk(&chunk);
         } else {
             printf("%s\n", "Usage: cpplox -[implementation (e.g. clox, jlox)] [file]");
